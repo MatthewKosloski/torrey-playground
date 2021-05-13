@@ -1,46 +1,53 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
+const respondWithBadRequest = (errMsg) => ({
+	statusCode: 400,
+	headers: { 'Content-Type': 'text/plain' },
+	body: `Bad Request. ${errMsg.replace(/[\n\t]/i,'')}.`
+});
+
+const respondWithOk = (res) => ({
+	statusCode: 200,
+	headers: { 'Content-Type': 'application/json' },
+	body: JSON.stringify(res)
+});
+
 module.exports.handler = async (event) => {
-	const defaults = {
-		program: "",
+
+	let actualBody = event.body || event;
+
+	if (typeof actualBody === 'string')
+		actualBody = JSON.parse(actualBody);
+
+		const defaultBody = {
+			program: "",
+			options: {
+				flags: [],
+				semanticVersion: '3.0.0'
+			}
+		};
+	
+	// Merge defaultBody with actualBody
+	const mergedBody = {
+		program: actualBody.program || defaultBody.program,
 		options: {
-			flags: [],
-			semanticVersion: '3.0.0'
+			...defaultBody.options,
+			...actualBody.options
 		}
 	};
 
-	if (event != undefined) {
-		// An event object has been provided,
-		// so merge the default properties with
-		// those in the given event such that
-		// properties specified in the given event
-		// override the defaults.
-		event = {
-			program: event.program || defaults.program,
-			options: {
-				...defaults.options,
-				...event.options
-			}
-		};
-	} else {
-		// No event object has been provided, so
-		// use the defaults.
-		event = defaults;
-	}
-
-	const { program, options } = event;
+	const { program, options } = mergedBody;
 	const { flags, semanticVersion } = options;
 
+	// Validate the provided semantic version.
 	const supportedSemanticVersions = ['1.0.1', '2.0.1', '3.0.0'];
-
 	if (supportedSemanticVersions.filter((v) => v == semanticVersion).length == 0)
-	{
-		return {
-			statusCode: 400,
-			message: `Bad Request. The provided semanticVersion "${semanticVersion}" is invalid. Please visit https://github.com/MatthewKosloski/torrey/tags to view a list of valid semantic versions. Please note that not all compiler versions listed there are installed on this server.`
-		};
-	}
+		return respondWithBadRequest(`The provided semanticVersion 
+			"${semanticVersion}" is invalid. Please visit 
+			https://github.com/MatthewKosloski/torrey/tags to view a list of 
+			valid semantic versions. Please note that not all compiler versions
+			listed there are installed on this server.`);
 
 	// The tmp directory given to the lambda function to
 	// be used as an empheral storage location. The user
@@ -107,8 +114,12 @@ module.exports.handler = async (event) => {
 	// the contents of the standard output and error streams.
 	const { stdout, stderr } = await exec(cmd);
 
-	return {
-		statusCode: 200,
-		message: { stdout, stderr }
+	const responseBody = {
+		stdout,
+		stderr,
+		program
 	};
+
+	console.log(`Response: ${responseBody}`);
+	return respondWithOk(responseBody);
 };
