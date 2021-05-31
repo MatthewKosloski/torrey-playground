@@ -12,12 +12,17 @@ ARG BASE_TEMP_DIR="/tmp2"
 # installed.
 ARG COMPILER_DIR="$BASE_TEMP_DIR/compilers"
 
+# The directory that contains the lambda
+# function's handler.
+ARG LAMBDA_HANDLER_DIR="/func"
+
 FROM node:12-buster as build-image
 
 # Include args in this stage of the build.
 ARG FUNCTION_DIR
 ARG BASE_TEMP_DIR
 ARG COMPILER_DIR
+ARG LAMBDA_HANDLER_DIR
 
 # Install aws-lambda-cpp build dependencies and
 # download the compilers to a temporary directory.
@@ -44,7 +49,7 @@ RUN apt-get update \
 
 # Copy the function code from the build context
 # into the container.
-COPY func/* ${FUNCTION_DIR}
+COPY ${LAMBDA_HANDLER_DIR}/* ${FUNCTION_DIR}
 
 WORKDIR ${FUNCTION_DIR}
 
