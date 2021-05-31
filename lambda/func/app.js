@@ -62,7 +62,7 @@ module.exports.handler = async (event) => {
 			listed there are installed on this server.`);
 
 	// The tmp directory given to the lambda function to
-	// be used as an empheral storage location. The user
+	// be used as an ephemeral storage location. The user
 	// running within the lambda's container has rwx permissions
 	// in this directory.
 	const tmpDir = `../tmp`;
