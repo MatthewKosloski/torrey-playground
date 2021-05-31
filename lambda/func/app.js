@@ -1,16 +1,23 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-const respondWithBadRequest = (errMsg) => ({
-	statusCode: 400,
-	headers: { 'Content-Type': 'text/plain' },
-	body: `Bad Request. ${errMsg.replace(/[\n\t]/i,'')}.`
-});
+const badReqResponse = (errMsg) => {
+	return baseResponseObj(
+		400,
+		{ 'Content-Type': 'text/plain' },
+		`Bad Request. ${errMsg.replace(/[\n\t]/i,'')}.`
+	);
+}
 
-const respondWithOk = (res) => ({
-	statusCode: 200,
-	headers: { 'Content-Type': 'application/json' },
-	body: JSON.stringify(res)
+const okResponse = (body) => {
+	return baseResponseObj(
+		200,
+		{ 'Content-Type': 'application/json' },
+		JSON.stringify(body));
+}
+
+const baseResponseObj = ({ statusCode, headers, body }) => ({
+	statusCode, headers, body
 });
 
 module.exports.handler = async (event) => {
@@ -43,7 +50,7 @@ module.exports.handler = async (event) => {
 	// Validate the provided semantic version.
 	const supportedSemanticVersions = ['1.0.1', '2.0.1', '3.0.0'];
 	if (supportedSemanticVersions.filter((v) => v == semanticVersion).length == 0)
-		return respondWithBadRequest(`The provided semanticVersion 
+		return badReqResponse(`The provided semanticVersion 
 			"${semanticVersion}" is invalid. Please visit 
 			https://github.com/MatthewKosloski/torrey/tags to view a list of 
 			valid semantic versions. Please note that not all compiler versions
@@ -121,5 +128,5 @@ module.exports.handler = async (event) => {
 	};
 
 	console.log(`Response: ${responseBody}`);
-	return respondWithOk(responseBody);
+	return okResponse(responseBody);
 };
