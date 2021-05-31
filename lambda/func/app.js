@@ -16,7 +16,7 @@ const okResponse = (body) => {
 		JSON.stringify(body));
 }
 
-const baseResponseObj = ({ statusCode, headers, body }) => ({
+const baseResponseObj = (statusCode, headers, body) => ({
 	statusCode, headers, body
 });
 
