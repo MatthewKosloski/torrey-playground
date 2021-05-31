@@ -13,26 +13,18 @@ FROM node:12-buster as build-image
 ARG FUNCTION_DIR
 ARG TEMP_DIR
 
-# Install aws-lambda-cpp build dependencies.
-RUN apt-get update && \
-  apt-get install -y \
+# Install aws-lambda-cpp build dependencies and
+# download the compilers to a temporary directory.
+RUN apt-get update \
+  && apt-get install -y \
   g++ \
   make \
   cmake \
   unzip \
   libcurl4-openssl-dev \
-  wget
-
-# Create the function directory.
-RUN mkdir -p ${FUNCTION_DIR}
-
-# Copy the function code from the build context
-# into the container.}
-COPY func/* ${FUNCTION_DIR}
-
-# Download the compilers to the
-# temporary directory.
-RUN mkdir ${TEMP_DIR} \
+  wget \
+  && mkdir -p ${FUNCTION_DIR} \
+  && mkdir ${TEMP_DIR} \
   && mkdir ${TEMP_DIR}/compilers \
   && cd ${TEMP_DIR}/compilers \
   && for i in "1.0.1" "2.0.1" "3.0.0"; do \
@@ -44,11 +36,13 @@ RUN mkdir ${TEMP_DIR} \
   && chmod o+x torreyc-"$i".jar \
   && cd ../; done
 
+# Copy the function code from the build context
+# into the container.
+COPY func/* ${FUNCTION_DIR}
+
 WORKDIR ${FUNCTION_DIR}
 
-RUN npm install aws-lambda-ric
-
-RUN npm install
+RUN npm install aws-lambda-ric && npm install
 
 # Grab a fresh slim copy of the image to reduce the final size.
 FROM node:12-buster-slim
