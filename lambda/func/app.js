@@ -22,8 +22,13 @@ const baseResponseObj = ({ statusCode, headers, body }) => ({
 
 module.exports.handler = async (event) => {
 
+	// If the function is triggered by API Gateway,
+	// then the event body is stored in event.body.
+	// Else, the entire event is the body.
 	let actualBody = event.body || event;
 
+	// Parse the event body to an object
+	// if it's a JSON string.
 	if (typeof actualBody === 'string')
 		actualBody = JSON.parse(actualBody);
 
