@@ -7,11 +7,17 @@ ARG FUNCTION_DIR="/function"
 # downloaded.
 ARG BASE_TEMP_DIR="/tmp2"
 
+# Define the temporary directory
+# to which the compilers will be
+# installed.
+ARG COMPILER_DIR="$BASE_TEMP_DIR/compilers"
+
 FROM node:12-buster as build-image
 
 # Include args in this stage of the build.
 ARG FUNCTION_DIR
 ARG BASE_TEMP_DIR
+ARG COMPILER_DIR
 
 # Install aws-lambda-cpp build dependencies and
 # download the compilers to a temporary directory.
@@ -25,8 +31,8 @@ RUN apt-get update \
   wget \
   && mkdir -p ${FUNCTION_DIR} \
   && mkdir ${BASE_TEMP_DIR} \
-  && mkdir ${BASE_TEMP_DIR}/compilers \
-  && cd ${BASE_TEMP_DIR}/compilers \
+  && mkdir ${COMPILER_DIR} \
+  && cd ${COMPILER_DIR} \
   && for i in "1.0.1" "2.0.1" "3.0.0"; do \
   mkdir "$i" \
   && cd ./"$i" \
@@ -50,6 +56,7 @@ FROM node:12-buster-slim
 # Include args in this stage of the build.
 ARG FUNCTION_DIR
 ARG BASE_TEMP_DIR
+ARG COMPILER_DIR
 
 # Install the compiler dependencies.
 RUN apt-get update && \
@@ -62,7 +69,7 @@ RUN apt-get update && \
 COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 
 # Copy in the compilers.
-COPY --from=build-image ${BASE_TEMP_DIR}/compilers ${BASE_TEMP_DIR}/compilers
+COPY --from=build-image ${COMPILER_DIR} ${COMPILER_DIR}
 
 # Set working directory to the root directory
 # containing the handler code.
