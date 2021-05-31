@@ -32,13 +32,13 @@ module.exports.handler = async (event) => {
 	if (typeof actualBody === 'string')
 		actualBody = JSON.parse(actualBody);
 
-		const defaultBody = {
-			program: "",
-			options: {
-				flags: [],
-				semanticVersion: '3.0.0'
-			}
-		};
+	const defaultBody = {
+		program: "",
+		options: {
+			flags: [],
+			semanticVersion: '3.0.0'
+		}
+	};
 	
 	// Merge defaultBody with actualBody
 	const mergedBody = {
