@@ -128,8 +128,7 @@ module.exports.handler = async (event) => {
 
 	const responseBody = {
 		stdout,
-		stderr,
-		program
+		stderr
 	};
 
 	console.log(`Response: ${responseBody}`);
