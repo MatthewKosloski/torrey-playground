@@ -5,13 +5,13 @@ ARG FUNCTION_DIR="/function"
 # Define a custom temp directory
 # at which the compilers will be
 # downloaded.
-ARG TEMP_DIR="/tmp2"
+ARG BASE_TEMP_DIR="/tmp2"
 
 FROM node:12-buster as build-image
 
 # Include args in this stage of the build.
 ARG FUNCTION_DIR
-ARG TEMP_DIR
+ARG BASE_TEMP_DIR
 
 # Install aws-lambda-cpp build dependencies and
 # download the compilers to a temporary directory.
@@ -24,9 +24,9 @@ RUN apt-get update \
   libcurl4-openssl-dev \
   wget \
   && mkdir -p ${FUNCTION_DIR} \
-  && mkdir ${TEMP_DIR} \
-  && mkdir ${TEMP_DIR}/compilers \
-  && cd ${TEMP_DIR}/compilers \
+  && mkdir ${BASE_TEMP_DIR} \
+  && mkdir ${BASE_TEMP_DIR}/compilers \
+  && cd ${BASE_TEMP_DIR}/compilers \
   && for i in "1.0.1" "2.0.1" "3.0.0"; do \
   mkdir "$i" \
   && cd ./"$i" \
@@ -49,7 +49,7 @@ FROM node:12-buster-slim
 
 # Include args in this stage of the build.
 ARG FUNCTION_DIR
-ARG TEMP_DIR
+ARG BASE_TEMP_DIR
 
 # Install the compiler dependencies.
 RUN apt-get update && \
@@ -62,7 +62,7 @@ RUN apt-get update && \
 COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 
 # Copy in the compilers.
-COPY --from=build-image ${TEMP_DIR}/compilers ${TEMP_DIR}/compilers
+COPY --from=build-image ${BASE_TEMP_DIR}/compilers ${BASE_TEMP_DIR}/compilers
 
 # Set working directory to the root directory
 # containing the handler code.
