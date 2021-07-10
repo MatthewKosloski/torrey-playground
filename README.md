@@ -1,6 +1,6 @@
 # torrey-playground
 
-An online environment (inspired by the [Go Playground](https://play.golang.org/)) that enables anyone to write, compile, assemble, and execute Torrey programs without having to configure the compiler locally.
+An online environment (inspired by the [Go Playground](https://play.golang.org/)) that enables anyone to write, compile, assemble, and execute Torrey programs in the cloud.
 
 ## Testing the lambda function locally
 
