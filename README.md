@@ -28,7 +28,13 @@ curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d
     '{"program": "(println (* 6 7))"}'
 ```
 
-4. When testing is complete, stop the running container to free up resources:
+4. Observe the output from the lambda function:
+
+```
+{"statusCode":200,"headers":{"Content-Type":"application/json"},"body":"{\"stdout\":\"42\\n\",\"stderr\":\"\"}"}
+```
+
+5. When testing is complete, stop the running container to free up resources:
 
 ```
 docker stop test1
