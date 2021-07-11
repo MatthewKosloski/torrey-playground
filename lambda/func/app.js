@@ -45,11 +45,13 @@ module.exports.handler = async (event) => {
 	// Read the lambda config file.
 	let defaultBody;
 	let supportedSemanticVersions;
+	let supportedFlags;
 
 	try {
 		const config = JSON.parse(await readFile('./config.json', 'utf8'))[0];
 		defaultBody = config.defaults;
 		supportedSemanticVersions = config.supportedSemanticVersions;
+		supportedFlags = config.supportedFlags;
 	}
 	catch {
 		return serverErrorResponse('An error occurred while reading the lambda configuration file');
@@ -71,9 +73,11 @@ module.exports.handler = async (event) => {
 
 	// Validate the provided semantic version.
 	if (supportedSemanticVersions.filter((v) => v == semanticVersion).length == 0)
-		return badReqResponse(`The provided semanticVersion
-			"${semanticVersion}" is invalid. Supported semantic
-			versions are: ${supportedSemanticVersions.join(", ")}.`);
+		return badReqResponse(`The provided semanticVersion "${semanticVersion}" is invalid. Supported semantic versions are: ${supportedSemanticVersions.join(", ")}`);
+
+	// Validate the provided compiler flags.
+	if (flags.map(flag => supportedFlags.includes(flag)).includes(false))
+		return badReqResponse(`One or more provided flags are invalid. Supported flags are: ${supportedFlags.join(", ")}`);
 
 	// The tmp directory given to the lambda function to
 	// be used as an ephemeral storage location. The user

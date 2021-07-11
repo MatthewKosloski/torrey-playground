@@ -5,6 +5,12 @@
             "2.0.1",
             "3.0.0"
         ],
+        "supportedFlags": [
+            "-L",
+            "-p",
+            "-ir",
+            "-S"
+        ],
         "defaults": {
             "program": "",
             "options": {
