@@ -48,7 +48,7 @@ RUN apt-get update \
   && cd ../; done
 
 # Copy the function code from the build context
-# into the container.
+# into the image's file system.
 COPY ${LAMBDA_HANDLER_DIR}/* ${FUNCTION_DIR}
 
 WORKDIR ${FUNCTION_DIR}
