@@ -16,6 +16,9 @@ ARG COMPILER_DIR="$BASE_TEMP_DIR/compilers"
 # function's handler.
 ARG LAMBDA_HANDLER_DIR="/func"
 
+# The path to the lambda function's config file. 
+ARG CONFIG_FILE_PATH="config.json"
+
 FROM node:12-buster as build-image
 
 # Include args in this stage of the build.
@@ -23,6 +26,13 @@ ARG FUNCTION_DIR
 ARG BASE_TEMP_DIR
 ARG COMPILER_DIR
 ARG LAMBDA_HANDLER_DIR
+ARG CONFIG_FILE_PATH
+
+# Change shell from sh to bash
+SHELL ["/bin/bash", "-c"]
+
+# Copy the config file into the image's file system.
+COPY ${CONFIG_FILE_PATH} /
 
 # Install aws-lambda-cpp build dependencies and
 # download the compilers to a temporary directory.
@@ -34,11 +44,13 @@ RUN apt-get update \
   unzip \
   libcurl4-openssl-dev \
   wget \
+  jq \
+  && declare -a versions=($(jq -r '.[0] | .supportedSemanticVersions | join(" ")' ${CONFIG_FILE_PATH})) \
   && mkdir -p ${FUNCTION_DIR} \
   && mkdir ${BASE_TEMP_DIR} \
   && mkdir ${COMPILER_DIR} \
   && cd ${COMPILER_DIR} \
-  && for i in "1.0.1" "2.0.1" "3.0.0"; do \
+  && for i in ${versions[@]}; do \
   mkdir "$i" \
   && cd ./"$i" \
   && wget https://github.com/MatthewKosloski/torrey/releases/download/"$i"/torreyc-"$i".zip \
