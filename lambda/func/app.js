@@ -1,11 +1,21 @@
 const util = require('util');
+const fs = require('fs');
 const exec = util.promisify(require('child_process').exec);
+const readFile = util.promisify(fs.readFile);
 
 const badReqResponse = (errMsg) => {
 	return baseResponseObj(
 		400,
 		{ 'Content-Type': 'text/plain' },
 		`Bad Request. ${errMsg.replace(/[\n\t]/i,'')}.`
+	);
+}
+
+const serverErrorResponse = (errMsg) => {
+	return baseResponseObj(
+		500,
+		{ 'Content-Type': 'text/plain' },
+		`Internal Server Error. ${errMsg.replace(/[\n\t]/i,'')}.`
 	);
 }
 
@@ -32,17 +42,24 @@ module.exports.handler = async (event) => {
 	if (typeof actualBody === 'string')
 		actualBody = JSON.parse(actualBody);
 
-	const defaultBody = {
-		program: "",
-		options: {
-			flags: [],
-			semanticVersion: '3.0.0'
-		}
-	};
+	// Read the lambda config file.
+	let defaultBody;
+	let supportedSemanticVersions;
+
+	try {
+        const config = JSON.parse(await readFile('./config.json', 'utf8'))[0];
+		defaultBody = config.defaults;
+		supportedSemanticVersions = config.supportedSemanticVersions;
+    }
+    catch {
+		return serverErrorResponse('An error occurred while reading the lambda configuration file');
+    }
 	
 	// Merge defaultBody with actualBody
 	const mergedBody = {
-		program: actualBody.program || defaultBody.program,
+		program: actualBody.program === undefined 
+			? defaultBody.program
+			: actualBody.program,
 		options: {
 			...defaultBody.options,
 			...actualBody.options
@@ -53,13 +70,10 @@ module.exports.handler = async (event) => {
 	const { flags, semanticVersion } = options;
 
 	// Validate the provided semantic version.
-	const supportedSemanticVersions = ['1.0.1', '2.0.1', '3.0.0'];
 	if (supportedSemanticVersions.filter((v) => v == semanticVersion).length == 0)
-		return badReqResponse(`The provided semanticVersion 
-			"${semanticVersion}" is invalid. Please visit 
-			https://github.com/MatthewKosloski/torrey/tags to view a list of 
-			valid semantic versions. Please note that not all compiler versions
-			listed there are installed on this server.`);
+		return badReqResponse(`The provided semanticVersion
+			"${semanticVersion}" is invalid. Supported semantic
+			versions are: ${supportedSemanticVersions.join(", ")}.`);
 
 	// The tmp directory given to the lambda function to
 	// be used as an ephemeral storage location. The user

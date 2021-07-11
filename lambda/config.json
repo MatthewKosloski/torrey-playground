@@ -6,8 +6,11 @@
             "3.0.0"
         ],
         "defaults": {
-            "semanticVersion": "3.0.0",
-            "flags": []
+            "program": "",
+            "options": {
+                "flags": [],
+                "semanticVersion": "3.0.0"
+            }
         }
     }
 ]

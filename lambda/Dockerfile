@@ -63,6 +63,9 @@ RUN apt-get update \
 # into the image's file system.
 COPY ${LAMBDA_HANDLER_DIR}/* ${FUNCTION_DIR}
 
+# Copy the config file into the image's file system.
+COPY ${CONFIG_FILE_PATH} ${FUNCTION_DIR}
+
 WORKDIR ${FUNCTION_DIR}
 
 RUN npm install aws-lambda-ric && npm install
