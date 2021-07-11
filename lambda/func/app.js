@@ -7,7 +7,7 @@ const badReqResponse = (errMsg) => {
 	return baseResponseObj(
 		400,
 		{ 'Content-Type': 'text/plain' },
-		`Bad Request. ${errMsg.replace(/[\n\t]/i,'')}.`
+		`Bad Request. ${errMsg.replace(/[\n\t]/i, '')}.`
 	);
 }
 
@@ -15,7 +15,7 @@ const serverErrorResponse = (errMsg) => {
 	return baseResponseObj(
 		500,
 		{ 'Content-Type': 'text/plain' },
-		`Internal Server Error. ${errMsg.replace(/[\n\t]/i,'')}.`
+		`Internal Server Error. ${errMsg.replace(/[\n\t]/i, '')}.`
 	);
 }
 
@@ -47,17 +47,17 @@ module.exports.handler = async (event) => {
 	let supportedSemanticVersions;
 
 	try {
-        const config = JSON.parse(await readFile('./config.json', 'utf8'))[0];
+		const config = JSON.parse(await readFile('./config.json', 'utf8'))[0];
 		defaultBody = config.defaults;
 		supportedSemanticVersions = config.supportedSemanticVersions;
-    }
-    catch {
+	}
+	catch {
 		return serverErrorResponse('An error occurred while reading the lambda configuration file');
-    }
-	
+	}
+
 	// Merge defaultBody with actualBody
 	const mergedBody = {
-		program: actualBody.program === undefined 
+		program: actualBody.program === undefined
 			? defaultBody.program
 			: actualBody.program,
 		options: {
