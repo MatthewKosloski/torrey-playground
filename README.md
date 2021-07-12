@@ -1,8 +1,8 @@
 # torrey-playground-lambda
 
-The lambda function that powers the [Torrey Playground](https://www.torrey.xyz/play/).
+The Lambda function that powers the [Torrey Playground](https://www.torrey.xyz/play/).
 
-## Testing the lambda function locally
+## Testing the Lambda function locally
 
 From within the `lambda/` directory:
 
