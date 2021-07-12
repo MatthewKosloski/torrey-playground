@@ -23,7 +23,7 @@ const okResponse = (body) => {
 	return baseResponseObj(
 		200,
 		{ 
-			'Content-Type': 'application/json' ,
+			'Content-Type': 'application/json',
 			'Access-Control-Allow-Headers' : 'Content-Type',
 			'Access-Control-Allow-Origin': 'https://amazing-kalam-4dd784.netlify.app',
 			'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
