@@ -75,14 +75,15 @@ module.exports.handler = async (event) => {
 
 	const { program, options } = mergedBody;
 	const { flags, semanticVersion } = options;
+	const supportedFlagNames = supportedFlags.map(f => f.name);
 
 	// Validate the provided semantic version.
 	if (supportedSemanticVersions.filter((v) => v == semanticVersion).length == 0)
 		return badReqResponse(`The provided semanticVersion "${semanticVersion}" is invalid. Supported semantic versions are: ${supportedSemanticVersions.join(", ")}`);
 
 	// Validate the provided compiler flags.
-	if (flags.map(flag => supportedFlags.includes(flag)).includes(false))
-		return badReqResponse(`One or more provided flags are invalid. Supported flags are: ${supportedFlags.join(", ")}`);
+	if (flags.map(flag => supportedFlagNames.includes(flag)).includes(false))
+		return badReqResponse(`One or more provided flags are invalid. Supported flags are: ${supportedFlagNames.join(", ")}`);
 
 	// The tmp directory given to the lambda function to
 	// be used as an ephemeral storage location. The user

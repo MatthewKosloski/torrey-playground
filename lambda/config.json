@@ -6,10 +6,22 @@
             "3.0.0"
         ],
         "supportedFlags": [
-            "-L",
-            "-p",
-            "-ir",
-            "-S"
+            {
+                "name": "-L",
+                "description": "Tokenize"
+            },
+            {
+                "name": "-p",
+                "description": "Parse"
+            },
+            {
+                "name": "-ir",
+                "description": "Generate intermediate code"
+            },
+            {
+                "name": "-S",
+                "description": "Compile"
+            }
         ],
         "defaults": {
             "program": "",
