@@ -1,6 +1,6 @@
-# torrey-playground
+# torrey-playground-lambda
 
-An online environment (inspired by the [Go Playground](https://play.golang.org/)) that enables anyone to write, compile, assemble, and execute Torrey programs in the cloud.
+The lambda function that powers the [Torrey Playground](https://www.torrey.xyz/play/).
 
 ## Testing the lambda function locally
 
@@ -15,7 +15,7 @@ docker build -t matthewkosloski/torrey-playground-lambda .
 2. Start up a container named `test1`:
 
 ```
-docker run --name test1 -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
+s docker run --name test1 -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
     --entrypoint /aws-lambda/aws-lambda-rie \
     matthewkosloski/torrey-playground-lambda:latest \
         /usr/local/bin/npx aws-lambda-ric app.handler
