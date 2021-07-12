@@ -25,7 +25,7 @@ const okResponse = (body) => {
 		{ 
 			'Content-Type': 'application/json',
 			'Access-Control-Allow-Headers' : 'Content-Type',
-			'Access-Control-Allow-Origin': 'https://amazing-kalam-4dd784.netlify.app',
+			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 		},
 		JSON.stringify(body));
