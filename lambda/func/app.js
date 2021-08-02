@@ -179,7 +179,6 @@ module.exports.handler = async (event) => {
 				else
 					args = []
 		}
-		return ok(err);
 		return internalServerError(errors.format(template, args));
 	}
 
