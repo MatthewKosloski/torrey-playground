@@ -2,8 +2,10 @@ const util = require('util');
 const fs = require('fs');
 const exec = util.promisify(require('child_process').exec);
 const readFile = util.promisify(fs.readFile);
+const errors = require('./errors');
+const constants = require('./constants');
 
-const badReqResponse = (errMsg) => {
+const badRequest = (errMsg) => {
 	return baseResponseObj(
 		400,
 		{ 'Content-Type': 'text/plain' },
@@ -11,7 +13,7 @@ const badReqResponse = (errMsg) => {
 	);
 }
 
-const serverErrorResponse = (errMsg) => {
+const internalServerError = (errMsg) => {
 	return baseResponseObj(
 		500,
 		{ 'Content-Type': 'text/plain' },
@@ -19,7 +21,7 @@ const serverErrorResponse = (errMsg) => {
 	);
 }
 
-const okResponse = (body) => {
+const ok = (body) => {
 	return baseResponseObj(
 		200,
 		{ 
@@ -53,20 +55,21 @@ module.exports.handler = async (event) => {
 	let supportedFlags;
 
 	try {
-		const config = JSON.parse(await readFile('./config.json', 'utf8'))[0];
+		const config = JSON.parse(await readFile(constants.CONFIG_FILE_PATH, 
+			constants.CONFIG_ENCODING))[0];
 		defaultBody = config.defaults;
 		supportedSemanticVersions = config.supportedSemanticVersions;
 		supportedFlags = config.supportedFlags;
 	}
 	catch {
-		return serverErrorResponse('An error occurred while reading the lambda configuration file');
+		return internalServerError(errors.handler.CANNOT_READ_CONFIG);
 	}
 
 	// Merge defaultBody with actualBody
 	const mergedBody = {
 		program: actualBody.program === undefined
-			? defaultBody.program
-			: actualBody.program,
+			? defaultBody.program.trim()
+			: actualBody.program.trim(),
 		options: {
 			...defaultBody.options,
 			...actualBody.options
@@ -77,84 +80,113 @@ module.exports.handler = async (event) => {
 	const { flags, semanticVersion } = options;
 	const supportedFlagNames = supportedFlags.map(f => f.name);
 
+	// Validate the length of the provided program.
+	if (program.length > constants.MAX_PROGRAM_LENGTH)
+		return badRequest(errors.format(
+			errors.handler.MAXIMUM_PROGRAM_LENGTH_EXCEEDED,
+			[program.length, constants.MAX_PROGRAM_LENGTH]));
+
 	// Validate the provided semantic version.
-	if (supportedSemanticVersions.filter((v) => v == semanticVersion).length == 0)
-		return badReqResponse(`The provided semanticVersion "${semanticVersion}" is invalid. Supported semantic versions are: ${supportedSemanticVersions.join(", ")}`);
+	if (!supportedSemanticVersions.includes(semanticVersion))
+		return badRequest(errors.format(
+			errors.handler.INVALID_SEMANTIC_VERSION,
+			[semanticVersion, supportedSemanticVersions.join(', ')]));
 
 	// Validate the provided compiler flags.
-	if (flags.map(flag => supportedFlagNames.includes(flag)).includes(false))
-		return badReqResponse(`One or more provided flags are invalid. Supported flags are: ${supportedFlagNames.join(", ")}`);
+	if (flags.map(f => supportedFlagNames.includes(f)).includes(false))
+		return badRequest(errors.format
+			(errors.handler.INVALID_COMPILER_FLAG,
+			[supportedFlagNames.join(', ')]));
 
-	// The tmp directory given to the lambda function to
+	// The tmp directory is given to the lambda function to
 	// be used as an ephemeral storage location. The user
 	// running within the lambda's container has rwx permissions
 	// in this directory.
-	const tmpDir = `../tmp`;
+	const tmpDir="../tmp"
 
-	// The location to which the Torrey compilers have been downloaded.
-	const compilersRootDir = `../tmp2/compilers`;
+	//The name of the compiler jar file.
+	const compilerFileName=`torreyc-${semanticVersion}.jar`;
 
-	// The directory to the selected compiler.
-	const compilerDir = `${compilersRootDir}/${semanticVersion}`;
+	const compilersRootDir="../tmp2/compilers";
 
-	// The path to the selected compiler's jar file.
-	const torreycPath = `${compilerDir}/torreyc-${semanticVersion}.jar`;
+	const compilerDir=`${compilersRootDir}/${semanticVersion}`;
 
-	// The path to the selected compiler's runtime.
-	const runtimePath = `${compilerDir}/runtime.c`;
+	const compilerPath=`${compilerDir}/${compilerFileName}`;
 
-	// The path to which the temporary assembly program will be written.
-	const asmPath = `${tmpDir}/temp.s`;
+	const runtimePath=`${compilerDir}/runtime.c`;
 
-	// The path at which the executable will live.
-	const execPath = `${tmpDir}/a.out`;
+	const runtimeHeaderPath=`${compilerDir}/runtime.h`;
 
-	// The path to which the runtime's object code will be written.
-	const objCodePath = `${tmpDir}/runtime.o`;
+	const asmPath=`${tmpDir}/temp.s`;
 
-	let cmd = ``;
+	const execPath=`${tmpDir}/a.out`;
 
-	// Run the compiler with the input program.
-	cmd = `${cmd} echo "${program}" | java -jar ${torreycPath}`;
+	const objCodePath=`${tmpDir}/runtime.o`;
 
-	// If compiler flags are provided, then run
-	// the compiler with them.
-	if (flags.length != 0)
-		cmd = `${cmd} ${flags.join(' ')}`;
+	let cmd;
+	try
+	{
+		// At this point, the input to the compiler should be
+		// validated. Let's try to run the compiler with the input.
+		cmd = 'bash ./run.sh';
+		cmd += ` --version ${semanticVersion}`;
+		cmd += ` --program "${program}"`;
 
-	if (!(flags.includes('-L') || flags.includes('-p') || flags.includes('-ir')
-		|| flags.includes('-S'))) {
-		// No "breakpoint" flag has been provided, so build
-		// an executable and run it.
+		// We have to remove the hyphens that prefix
+		// the Compiler flags or else the bash script
+		// will try to interpret them as its arguments.
+		if (flags.length)
+			cmd += ` --flags "${flags.join(' ').replace(/\-/g, '')}"`;
 
-		// Write the assembly file to /tmp.
-		cmd = `${cmd} -S > ${asmPath}`;
-
-		// Build the runtime object code and save it to /tmp.
-		cmd = `${cmd} && gcc -c ${runtimePath}`;
-		cmd = `${cmd} -o ${objCodePath}`;
-
-		// Assemble and link the runtime with the assembly
-		// to build an executable.
-		cmd = `${cmd} && gcc ${asmPath} ${objCodePath} -o ${execPath}`;
-
-		// Run the program.
-		cmd = `${cmd} && ${execPath}`;
-
-		// Delete the temp assembly file and
-		// the produced executable file.
-		cmd = `${cmd} && rm ${asmPath} && rm ${execPath}`;
+		cmd += ` --temp-dir ${tmpDir}`;
+		cmd += ` --compiler-name ${compilerFileName}`;
+		cmd += ` --compilers-root-dir ${compilersRootDir}`;
+		cmd += ` --compiler-dir ${compilerDir}`;
+		cmd += ` --compiler-path ${compilerPath}`;
+		cmd += ` --runtime-path ${runtimePath}`;
+		cmd += ` --runtime-header-path ${runtimeHeaderPath}`;
+		cmd += ` --asm-path ${asmPath}`;
+		cmd += ` --exec-path ${execPath}`;
+		cmd += ` --obj-code-path ${objCodePath}`;
+		responseBody = await exec(cmd);
+	} catch(err) {
+		// Map the error code to an error template string. If there
+		// is no corresponding template for a given error code, then
+		// use a default error message.
+		let template = errors.bash[`_${err.code}`] 
+			|| errors.handler.UNKNOWN_ERROR;
+		
+		// Choose the arguments to use in the template string.
+		let args;
+		switch(err.code) {
+			case 64:
+			case 67:
+				args = [semanticVersion, compilerPath];
+				break;
+			case 65:
+				args = [semanticVersion, runtimePath];
+				break;
+			case 66:
+				args = [semanticVersion, runtimeHeaderPath];
+				break;
+			case 68:
+			case 69:
+				args = [semanticVersion];
+				break;
+			default:
+				if (err.stderr)
+					args = err.stderr.split(' ')
+				else
+					args = []
+		}
+		return ok(err);
+		return internalServerError(errors.format(template, args));
 	}
 
-	// Execute the above constructed bash command and return
-	// the contents of the standard output and error streams.
-	const { stdout, stderr } = await exec(cmd);
+	// The bash script ran the compiler without any errors,
+	// so send the compiler's standard output and error to
+	// the user.
 
-	const responseBody = {
-		stdout,
-		stderr
-	};
-
-	console.log(`Response: ${responseBody}`);
-	return okResponse(responseBody);
+	console.log('Response:', responseBody);
+	return ok(responseBody);
 };
