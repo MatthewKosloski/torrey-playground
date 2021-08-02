@@ -252,11 +252,8 @@ else
 	# Check if we are allowed to execute $execPath.
 
 	echo "$program" | java -jar $compilerPath -S > $asmPath \
-			&& gcc -c $runtimePath -o $objCodePath \
-			&& gcc $asmPath $objCodePath -o $execPath \
-			&& $execPath \
-			&& rm $asmPath $execPath
-	# echo "$asmPath";
-
-	# && gcc -c $runtimePath -o $objCodePath && gcc $asmPath $objCodePath -o $execPath && $execPath && rm $asmPath $execPath 
+		&& gcc -c $runtimePath -o $objCodePath \
+		&& gcc $asmPath $objCodePath -o $execPath \
+		&& $execPath \
+		&& rm $asmPath $execPath
 fi
