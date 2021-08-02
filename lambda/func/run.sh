@@ -196,34 +196,34 @@ fi
 # Check if the compiler is installed 
 # at the expected location.
 if [ ! -f "$compilerPath" ]; then
-    exit 64
+  exit 64
 fi
 
 # Check if the compiler runtime is installed 
 # at the expected location.
 if [ ! -f "$runtimePath" ]; then
-    exit 65
+  exit 65
 fi
 
 # Check if the compiler runtime header is installed 
 # at the expected location.
 if [ ! -f "$runtimeHeaderPath" ]; then
-    exit 66
+  exit 66
 fi
 
 # Check if we have permission to execute the compiler.
 if [ ! -x "$compilerPath" ]; then
-    exit 67
+  exit 67
 fi
 
 # Check if gcc dependency is installed.
 if [ "$(type -t gcc)" != "file" ]; then
-    exit 68
+  exit 68
 fi
 
 # Check if jvm dependency is installed.
 if [ "$(type -t java)" != "file" ]; then
-    exit 69
+  exit 69
 fi
 
 # Now it's safe to execute the compiler.
@@ -237,26 +237,26 @@ do
 done
 
 if [ "${#flags[@]}" -ne "0" ]; then
-    # There are compiler flags, so just
-    # run the compiler with them.
-    echo "$program" | java -jar $compilerPath ${flags[@]}
+	# There are compiler flags, so just
+	# run the compiler with them.
+	echo "$program" | java -jar $compilerPath ${flags[@]}
 else
-    # There aren't any compiler flags, so just
-    # compile, assemble, and execute.
+	# There aren't any compiler flags, so just
+	# compile, assemble, and execute.
 
-    # TODO:
-    # Check if we are allowed to write to the assembly file.
-    # Check if we are allowed to read from $runtimePath.
-    # Check if we are allowed to write to $objCodePath.
-    # Check if we are allowed to write to $execPath.
-    # Check if we are allowed to execute $execPath.
+	# TODO:
+	# Check if we are allowed to write to the assembly file.
+	# Check if we are allowed to read from $runtimePath.
+	# Check if we are allowed to write to $objCodePath.
+	# Check if we are allowed to write to $execPath.
+	# Check if we are allowed to execute $execPath.
 
-    echo "$program" | java -jar $compilerPath -S > $asmPath \
-        && gcc -c $runtimePath -o $objCodePath \
-        && gcc $asmPath $objCodePath -o $execPath \
-        && $execPath \
-        && rm $asmPath $execPath
-    # echo "$asmPath";
+	echo "$program" | java -jar $compilerPath -S > $asmPath \
+			&& gcc -c $runtimePath -o $objCodePath \
+			&& gcc $asmPath $objCodePath -o $execPath \
+			&& $execPath \
+			&& rm $asmPath $execPath
+	# echo "$asmPath";
 
-    # && gcc -c $runtimePath -o $objCodePath && gcc $asmPath $objCodePath -o $execPath && $execPath && rm $asmPath $execPath 
+	# && gcc -c $runtimePath -o $objCodePath && gcc $asmPath $objCodePath -o $execPath && $execPath && rm $asmPath $execPath 
 fi
