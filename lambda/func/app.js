@@ -182,10 +182,6 @@ module.exports.handler = async (event) => {
 		return internalServerError(errors.format(template, args));
 	}
 
-	// The bash script ran the compiler without any errors,
-	// so send the compiler's standard output and error to
-	// the user.
-
 	console.log('Response:', responseBody);
 	return ok(responseBody);
 };
