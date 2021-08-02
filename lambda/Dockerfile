@@ -61,7 +61,7 @@ RUN apt-get update \
 
 # Copy the function code from the build context
 # into the image's file system.
-COPY ${LAMBDA_HANDLER_DIR}/* ${FUNCTION_DIR}
+COPY ${LAMBDA_HANDLER_DIR}/ ${FUNCTION_DIR}
 
 # Copy the config file into the image's file system.
 COPY ${CONFIG_FILE_PATH} ${FUNCTION_DIR}
