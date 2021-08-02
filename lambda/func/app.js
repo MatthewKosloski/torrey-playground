@@ -30,7 +30,8 @@ const ok = (body) => {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 		},
-		JSON.stringify(body));
+		JSON.stringify(body)
+	);
 }
 
 const baseResponseObj = (statusCode, headers, body) => ({
