@@ -24,8 +24,15 @@ s docker run --name test1 -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
 3. Post data to the lambda function using cURL:
 
 ```
-curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d \
-    '{"program": "(println (* 6 7))"}'
+curl --location --request POST 'http://localhost:9000/2015-03-31/functions/function/invocations' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "program": "(println (* 2 (+ 5 6)))",
+    "options": {
+        "semanticVersion": "3.0.0",
+        "flags": ["-ir"]
+    }
+}'
 ```
 
 4. Observe the output from the lambda function:
