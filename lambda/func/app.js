@@ -95,8 +95,8 @@ module.exports.handler = async (event) => {
 
 	// Validate the provided compiler flags.
 	if (flags.map(f => supportedFlagNames.includes(f)).includes(false))
-		return badRequest(errors.format
-			(errors.handler.INVALID_COMPILER_FLAG,
+		return badRequest(errors.format(
+			errors.handler.INVALID_COMPILER_FLAG,
 			[supportedFlagNames.join(', ')]));
 
 	// The tmp directory is given to the lambda function to
