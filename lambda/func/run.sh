@@ -30,13 +30,13 @@ while (( "$#" )); do
 			# Quit successfully after displaying usage info.
 			exit 70
 			;;
-  	    --version)
+  	--version)
 			if ! semanticVersion="$(parse_argument "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
-            ;;
+      ;;
 		--program)
 			if ! program="$(parse_argument "$1" "$2")"; then
 				exit 70
