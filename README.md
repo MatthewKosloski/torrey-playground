@@ -21,7 +21,7 @@ s docker run --name test1 -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
         /usr/local/bin/npx aws-lambda-ric app.handler
 ```
 
-3. Post data to the lambda function using cURL:
+3. Post data to the Lambda function using cURL:
 
 ```
 curl --location --request POST 'http://localhost:9000/2015-03-31/functions/function/invocations' \
@@ -35,10 +35,15 @@ curl --location --request POST 'http://localhost:9000/2015-03-31/functions/funct
 }'
 ```
 
-4. Observe the output from the lambda function:
+4. Observe the output from the Lambda function:
 
 ```
-{"statusCode":200,"headers":{"Content-Type":"application/json"},"body":"{\"stdout\":\"42\\n\",\"stderr\":\"\"}"}
+{
+	"statusCode": 200,
+	"headers": {
+		"Content-Type": "application/json"
+	},
+	"body": "{\"stdout\":\"22\\n\",\"stderr\":\"\"}"}
 ```
 
 5. When testing is complete, stop the running container to free up resources:
