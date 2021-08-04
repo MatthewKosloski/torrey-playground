@@ -50,13 +50,13 @@ RUN apt-get update \
   && mkdir ${BASE_TEMP_DIR} \
   && mkdir ${COMPILER_DIR} \
   && cd ${COMPILER_DIR} \
-  && for i in ${versions[@]}; do \
-  mkdir "$i" \
-  && cd ./"$i" \
-  && wget https://github.com/MatthewKosloski/torrey/releases/download/"$i"/torreyc-"$i".zip \
+  && for version in ${versions[@]}; do \
+  mkdir "$version" \
+  && cd ./"$version" \
+  && wget https://github.com/MatthewKosloski/torrey/releases/download/"$version"/torreyc-"$version".zip \
   && unzip *.zip \
   && rm -rf *.zip \
-  && chmod o+x torreyc-"$i".jar \
+  && chmod o+x torreyc-"$version".jar \
   && cd ../; done
 
 # Copy the function code from the build context
