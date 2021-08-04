@@ -43,7 +43,8 @@ curl --location --request POST 'http://localhost:9000/2015-03-31/functions/funct
 	"headers": {
 		"Content-Type": "application/json"
 	},
-	"body": "{\"stdout\":\"22\\n\",\"stderr\":\"\"}"}
+	"body": "{\"stdout\":\"22\\n\",\"stderr\":\"\"}"
+}
 ```
 
 5. When testing is complete, stop the running container to free up resources:
