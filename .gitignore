@@ -1,6 +1,4 @@
 Vagrantfile
 *.log
-docker-entrypoint.sh
 bootstrap.sh
-/server/
 .vagrant
