@@ -101,27 +101,46 @@ module.exports.handler = async (event) => {
 
 	// The tmp directory is given to the lambda function to
 	// be used as an ephemeral storage location. The user
-	// running within the lambda's container has rwx permissions
+	// running within the Lambda's container has rwx permissions
 	// in this directory.
 	const tmpDir="../tmp"
 
-	//The name of the compiler jar file.
+	// The name of the selected compiler's jar file. The "selected compiler"
+	// is the version of the compiler that will be used.
 	const compilerFileName=`torreyc-${semanticVersion}.jar`;
 
+	// The parent directory that contains the installations of the compilers. Within
+	// this folder, there are subfolders, where each subfolder contains the install
+	// of a specific compiler.  The name of a subfolder is the semantic version of
+	// the compiler installed within.
 	const compilersRootDir="../tmp2/compilers";
 
+	// The location of the selected compiler, relative to the parent directory 
+	// that contains all compilers.
 	const compilerDir=`${compilersRootDir}/${semanticVersion}`;
 
+	// The path to the compiler's jar file, relative to the parent 
+	// directory that contains all compilers.
 	const compilerPath=`${compilerDir}/${compilerFileName}`;
 
+	// The path to the compiler's runtime source, relative to the parent 
+	// directory that contains all compilers.
 	const runtimePath=`${compilerDir}/runtime.c`;
 
+	// The path to the compiler's runtime header file, relative to the parent 
+	// directory that contains all compilers.
 	const runtimeHeaderPath=`${compilerDir}/runtime.h`;
 
+	// The path to which the resulting assembly code will be written, relative
+	// to the Lambda's emphemeral storage directory.
 	const asmPath=`${tmpDir}/temp.s`;
 
+	// The path to which the resulting executable file will be written, relative
+	// to the Lambda's emphemeral storage directory.
 	const execPath=`${tmpDir}/a.out`;
 
+	// The path to which the runtime object code will be written, relative
+	// to the Lambda's emphemeral storage directory.
 	const objCodePath=`${tmpDir}/runtime.o`;
 
 	let cmd;
