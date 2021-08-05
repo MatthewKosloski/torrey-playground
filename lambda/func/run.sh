@@ -133,57 +133,57 @@ while (( "$#" )); do
 	esac
 done
 
-missingFlags=()
+missingArgs=()
 if [ -z "$semanticVersion" ]; then
-	missingFlags+=("--version")
+	missingArgs+=("--version")
 fi
 
 if [ -z "$program" ]; then
-	missingFlags+=("--program")
+	missingArgs+=("--program")
 fi
 
 if [ -z "$tmpDir" ]; then
-	missingFlags+=("--temp-dir")
+	missingArgs+=("--temp-dir")
 fi
 
 if [ -z "$compilerFileName" ]; then
-	missingFlags+=("--compiler-name")
+	missingArgs+=("--compiler-name")
 fi
 
 if [ -z "$compilersRootDir" ]; then
-	missingFlags+=("--compilers-root-dir")
+	missingArgs+=("--compilers-root-dir")
 fi
 
 if [ -z "$compilerDir" ]; then
-	missingFlags+=("--compiler-dir")
+	missingArgs+=("--compiler-dir")
 fi
 
 if [ -z "$compilerPath" ]; then
-	missingFlags+=("--compiler-path")
+	missingArgs+=("--compiler-path")
 fi
 
 if [ -z "$runtimePath" ]; then
-	missingFlags+=("--runtime-path")
+	missingArgs+=("--runtime-path")
 fi
 
 if [ -z "$runtimeHeaderPath" ]; then
-	missingFlags+=("--runtime-header-path")
+	missingArgs+=("--runtime-header-path")
 fi
 
 if [ -z "$asmPath" ]; then
-	missingFlags+=("--asm-path")
+	missingArgs+=("--asm-path")
 fi
 
 if [ -z "$execPath" ]; then
-	missingFlags+=("--exec-path")
+	missingArgs+=("--exec-path")
 fi
 
 if [ -z "$objCodePath" ]; then
-	missingFlags+=("--obj-code-path")
+	missingArgs+=("--obj-code-path")
 fi
 
-if [ "${#missingFlags[@]}" -gt 0 ]; then
-	>&2 echo "$(basename -- "$0") ${missingFlags[*]}"
+if [ "${#missingArgs[@]}" -gt 0 ]; then
+	>&2 echo "$(basename -- "$0") ${missingArgs[*]}"
 	exit 73
 fi
 

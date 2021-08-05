@@ -11,7 +11,7 @@ module.exports.bash = {
 	_70: '%0: Argument for %1 is missing',
 	_71: '%0: Unsupported flag %1',
 	_72: '%0: Unknown flag %1',
-	_73: '%0: Missing the following required flags: %1'
+	_73: '%0: The following required flags are missing arguments: %1'
 };
 
 // Error messages that are used directly by
