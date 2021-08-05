@@ -23,6 +23,10 @@
 			{
 				"name": "-S",
 				"description": "Compile"
+			},
+			{
+				"name": "-v",
+				"description": "Version"
 			}
 		],
 		"defaults": {
