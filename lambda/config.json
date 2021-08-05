@@ -1,36 +1,36 @@
 [
-    {
-        "supportedSemanticVersions": [
-            "1.0.1",
-            "2.0.1",
-            "3.0.0",
-            "3.0.1",
-            "3.0.2"
-        ],
-        "supportedFlags": [
-            {
-                "name": "-L",
-                "description": "Tokenize"
-            },
-            {
-                "name": "-p",
-                "description": "Parse"
-            },
-            {
-                "name": "-ir",
-                "description": "Generate intermediate code"
-            },
-            {
-                "name": "-S",
-                "description": "Compile"
-            }
-        ],
-        "defaults": {
-            "program": "",
-            "options": {
-                "flags": [],
-                "semanticVersion": "3.0.2"
-            }
-        }
-    }
+	{
+		"supportedSemanticVersions": [
+			"1.0.1",
+			"2.0.1",
+			"3.0.0",
+			"3.0.1",
+			"3.0.2"
+		],
+		"supportedFlags": [
+			{
+				"name": "-L",
+				"description": "Tokenize"
+			},
+			{
+				"name": "-p",
+				"description": "Parse"
+			},
+			{
+				"name": "-ir",
+				"description": "Generate intermediate code"
+			},
+			{
+				"name": "-S",
+				"description": "Compile"
+			}
+		],
+		"defaults": {
+			"program": "",
+			"options": {
+				"flags": [],
+				"semanticVersion": "3.0.2"
+			}
+		}
+	}
 ]
