@@ -71,7 +71,7 @@ COPY ./entry_script.sh ${FUNCTION_DIR}
 
 WORKDIR ${FUNCTION_DIR}
 
-RUN npm install aws-lambda-ric && npm install
+RUN npm install jsonschema aws-lambda-ric && npm install
 
 # Grab a fresh slim copy of the image to reduce the final size.
 FROM node:12-buster-slim
