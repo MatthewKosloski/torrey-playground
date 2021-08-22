@@ -34,8 +34,7 @@ SHELL ["/bin/bash", "-c"]
 # Copy the config file into the image's file system.
 COPY ${CONFIG_FILE_PATH} /
 
-# Install aws-lambda-cpp build dependencies and
-# download the compilers to a temporary directory.
+# Install aws-lambda-cpp build dependencies.
 RUN apt-get update \
   && apt-get install -y \
   g++ \
@@ -44,8 +43,10 @@ RUN apt-get update \
   unzip \
   libcurl4-openssl-dev \
   wget \
-  jq \
-  && declare -a versions=($(jq -r '.[0] | .supportedSemanticVersions | join(" ")' ${CONFIG_FILE_PATH})) \
+  jq
+
+# Download the compilers to a temporary directory.
+RUN declare -a versions=($(jq -r '.[0] | .supportedSemanticVersions | join(" ")' ${CONFIG_FILE_PATH})) \
   && mkdir -p ${FUNCTION_DIR} \
   && mkdir ${BASE_TEMP_DIR} \
   && mkdir ${COMPILER_DIR} \
