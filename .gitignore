@@ -2,3 +2,4 @@ Vagrantfile
 *.log
 bootstrap.sh
 .vagrant
+aws-lambda-rie
