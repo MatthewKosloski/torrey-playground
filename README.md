@@ -42,8 +42,8 @@ curl --location --request POST 'http://localhost:9000/2015-03-31/functions/funct
 --data-raw '{
   "program": "(println (* 2 (+ 5 6)))",
   "options": {
-    "semanticVersion": "3.0.0",
-    "flags": ["-ir"]
+    "semanticVersion": "3.0.2",
+    "flags": []
   }
 }'
 ```
