@@ -4,6 +4,20 @@ The Lambda function that powers the [Torrey Playground](https://www.torrey.xyz/p
 
 ## Testing the Lambda function locally
 
+### Prerequisite
+
+In order to invoke the Lambda function locally for testing purposes, the [AWS Lambda Runtime Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator#installing) must be installed. To install the emulator to `lambda/`, from within the `lambda/` directory, run:
+
+```
+curl -Lo ./aws-lambda-rie \
+	https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie \
+	&& chmod +x ./aws-lambda-rie
+```
+
+Once the emulator is installed, continue on with the following instructions to invoke the Lambda function.
+
+### Invoking the Lambda function
+
 From within the `lambda/` directory:
 
 1. Build the Docker image using the current directory as the build context:
@@ -12,16 +26,15 @@ From within the `lambda/` directory:
 docker build -t matthewkosloski/torrey-playground-lambda .
 ```
 
-2. Start up a container named `test1`:
+2. Start up a container named `test1`, mapping guest port `8080` to host port `9000`:
+
+This will run the container in an interactive mode. Any `console.log` statements in the handler code will show up in this window.
 
 ```
-docker run --name test1 -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
-  --entrypoint /aws-lambda/aws-lambda-rie \
-  matthewkosloski/torrey-playground-lambda:latest \
-  /usr/local/bin/npx aws-lambda-ric app.handler
+docker run --name test1 -p 9000:8080 matthewkosloski/torrey-playground-lambda:latest
 ```
 
-3. Post data to the Lambda function using cURL:
+3. Within a new terminal window, post data to the Lambda function using cURL:
 
 ```
 curl --location --request POST 'http://localhost:9000/2015-03-31/functions/function/invocations' \
@@ -45,10 +58,4 @@ curl --location --request POST 'http://localhost:9000/2015-03-31/functions/funct
   },
   "body": "{\"stdout\":\"22\\n\",\"stderr\":\"\"}"
 }
-```
-
-5. When testing is complete, stop the running container to free up resources:
-
-```
-docker stop test1
 ```

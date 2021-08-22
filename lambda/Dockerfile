@@ -66,6 +66,9 @@ COPY ${LAMBDA_HANDLER_DIR}/ ${FUNCTION_DIR}
 # Copy the config file into the image's file system.
 COPY ${CONFIG_FILE_PATH} ${FUNCTION_DIR}
 
+# Copy the entrypoint script into the image's file system.
+COPY ./entry_script.sh ${FUNCTION_DIR}
+
 WORKDIR ${FUNCTION_DIR}
 
 RUN npm install aws-lambda-ric && npm install
@@ -95,5 +98,6 @@ COPY --from=build-image ${COMPILER_DIR} ${COMPILER_DIR}
 # containing the handler code.
 WORKDIR ${FUNCTION_DIR}
 
-ENTRYPOINT ["/usr/local/bin/npx", "aws-lambda-ric"]
-CMD ["app.handler"]
+ADD aws-lambda-rie /usr/local/bin/aws-lambda-rie 
+ENTRYPOINT [ "./entry_script.sh" ]
+CMD [ "app.handler" ]
