@@ -106,8 +106,10 @@ module.exports.handler = async (event) => {
 		});
 	}
 
-	console.log(messages.format(messages.cloudWatch.VALID_COMPILER_FLAGS,
-		[flags.join(', ').trim()]));
+	if (flags.length) {
+		console.log(messages.format(messages.cloudWatch.VALID_COMPILER_FLAGS,
+			[flags.join(', ').trim()]));
+	}
 
 	const { errMsg, exec } = await runCompiler(
 		program,
