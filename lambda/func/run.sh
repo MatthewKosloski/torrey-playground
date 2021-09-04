@@ -251,9 +251,14 @@ else
 	# Check if we are allowed to write to $execPath.
 	# Check if we are allowed to execute $execPath.
 
-	echo "$program" | java -jar $compilerPath -S > $asmPath \
-		&& gcc -c $runtimePath -o $objCodePath \
-		&& gcc $asmPath $objCodePath -o $execPath \
-		&& $execPath \
-		&& rm $asmPath $execPath
+	echo "$program" | java -jar $compilerPath -S > $asmPath
+
+	if [ $? -eq 0 ]; then
+	  # The compiler terminated normally,
+		# so let's try to assemble and run.
+		gcc -c $runtimePath -o $objCodePath \
+			&& gcc $asmPath $objCodePath -o $execPath \
+			&& $execPath \
+			&& rm $asmPath $objCodePath $execPath
+	fi
 fi
