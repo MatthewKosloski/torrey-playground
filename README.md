@@ -6,7 +6,7 @@ The Lambda function that powers the [Torrey Playground](https://www.torrey.xyz/p
 
 ### Prerequisite
 
-In order to invoke the Lambda function locally for testing purposes, the [AWS Lambda Runtime Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator#installing) must be installed. To install the emulator to `lambda/`, from within the `lambda/` directory, run:
+In order to invoke the Lambda function locally for testing purposes, the [AWS Lambda Runtime Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator#installing) must be installed. To install the emulator, from within the `lambda/` directory, run:
 
 ```
 curl -Lo ./aws-lambda-rie \
