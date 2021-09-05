@@ -4,16 +4,27 @@ display_usage () {
 	echo "This is usage info!"
 }
 
-parse_argument() {
-	# Check if the argument to $1 is
-	# not null and doesn't start with a "-"
-	if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+# $1 A script flag name
+# $2 The value of the flag
+# $3 Indicates whether the flag value
+# is surrounded in quotes
+parse_flag_value() {
+	if [ -n "$2" ] && [ "$3" == "true" ]; then
+		# The flag value isn't null and it's
+		# surrounded by quotes
+		echo "$2"
+	elif [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+		# The flag value isn't null and it's not
+		# surrounded by quotes and thus cannot
+		# start with a hyphen (or else it'll be
+		# treated like another script flag name)
 		echo "$2"
 	else
 		>&2 echo "$(basename -- "$0") $1"
 		return 1
 	fi
 }
+
 
 # Holds the Torrey compiler flags.
 declare -a flags
@@ -31,21 +42,21 @@ while (( "$#" )); do
 			exit 70
 			;;
   	--version)
-			if ! semanticVersion="$(parse_argument "$1" "$2")"; then
+			if ! semanticVersion="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
       ;;
 		--program)
-			if ! program="$(parse_argument "$1" "$2")"; then
+			if ! program="$(parse_flag_value "$1" "$2" true)"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--flags)
-			if ! flagStr="$(parse_argument "$1" "$2")"; then
+			if ! flagStr="$(parse_flag_value "$1" "$2" true)"; then
 				exit 70
 			else
 				flags=($flagStr)
@@ -53,70 +64,70 @@ while (( "$#" )); do
 			fi
 			;;
 		--temp-dir)
-			if ! tmpDir="$(parse_argument "$1" "$2")"; then
+			if ! tmpDir="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--compiler-name)
-			if ! compilerFileName="$(parse_argument "$1" "$2")"; then
+			if ! compilerFileName="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--compilers-root-dir)
-			if ! compilersRootDir="$(parse_argument "$1" "$2")"; then
+			if ! compilersRootDir="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--compiler-dir)
-			if ! compilerDir="$(parse_argument "$1" "$2")"; then
+			if ! compilerDir="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--compiler-path)
-			if ! compilerPath="$(parse_argument "$1" "$2")"; then
+			if ! compilerPath="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--runtime-path)
-			if ! runtimePath="$(parse_argument "$1" "$2")"; then
+			if ! runtimePath="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--runtime-header-path)
-			if ! runtimeHeaderPath="$(parse_argument "$1" "$2")"; then
+			if ! runtimeHeaderPath="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--asm-path)
-			if ! asmPath="$(parse_argument "$1" "$2")"; then
+			if ! asmPath="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--exec-path)
-			if ! execPath="$(parse_argument "$1" "$2")"; then
+			if ! execPath="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
 			fi
 			;;
 		--obj-code-path)
-			if ! objCodePath="$(parse_argument "$1" "$2")"; then
+			if ! objCodePath="$(parse_flag_value "$1" "$2")"; then
 				exit 70
 			else
 				shift 2
@@ -224,17 +235,7 @@ fi
 # Check if jvm dependency is installed.
 if [ "$(type -t java)" != "file" ]; then
   exit 69
-fi
-
-# Now it's safe to execute the compiler.
-
-# Prefix flag names with hyphens.
-count=0
-for flag in "${flags[@]}"
-do 
-  flags[count]="-$flag"
-  count=$((count+1))
-done
+fi 
 
 if [ "${#flags[@]}" -ne "0" ]; then
 	# There are compiler flags, so just

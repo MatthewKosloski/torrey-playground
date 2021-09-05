@@ -57,7 +57,7 @@ const _buildArgStr = (
 	let argStr = '';
 	for (const arg in args) {
 		if (args[arg] !== null) {
-			if (arg === '--program') {
+			if (arg === '--program' || arg === '--flags') {
 				argStr += `${arg} "${args[arg]}" `;
 			} else {
 				argStr += `${arg} ${args[arg]} `;
@@ -134,18 +134,14 @@ module.exports = async (program, flags, semanticVersion,
 
 	try
 	{
-
-		// We have to remove the hyphens that prefix
-		// the Compiler flags or else the bash script
-		// will try to interpret them as its arguments.
-		const flagSuffixes = flags.length
-			? flags.join(' ').replace(/\-/g, '')
-			: null;
-
 		const argStr = _buildArgStr(
 			semanticVersion,
 			program,
-			flagSuffixes,
+			// If there are flags, then pass them
+			// in as a string.
+			flags.length
+				? flags.join(' ')
+				: null,
 			tmpDir,
 			compilerFileName,
 			compilersRootDir,
