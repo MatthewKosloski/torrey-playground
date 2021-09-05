@@ -263,3 +263,9 @@ else
 			&& rm $asmPath $objCodePath $execPath
 	fi
 fi
+
+# If we reach this point, the script has run successfully,
+# so we indicate this by exiting with zero. If we didn't
+# exit with zero here, then this script would return with 
+# the exit code that the compiler exited with.
+exit 0
