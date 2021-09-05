@@ -160,9 +160,6 @@ module.exports = async (program, flags, semanticVersion,
 
 		result.exec = await exec(`bash ${runScriptPath} ${argStr}`);
 	} catch(err) {
-
-		console.log(err.stack);
-
 		// Map the error code to an error template string. If there
 		// is no corresponding template for a given error code, then
 		// use a default error message.
