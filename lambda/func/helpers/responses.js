@@ -8,7 +8,8 @@ const _baseResponseObj = (statusCode, headers, body) => {
 	const statusText = statusTextMap[`_${statusCode}`];
 
 	if (statusText !== undefined) {
-		return {
+
+		const response = {
 			status: {
 				code: statusCode,
 				text: statusText
@@ -16,6 +17,17 @@ const _baseResponseObj = (statusCode, headers, body) => {
 			headers,
 			body
 		};
+
+		if (statusCode !== 200) {
+			// In order to map the Lambda output to a non-2xx HTTP response,
+			// we need to throw an error. Whatever we pass to the Error constructor
+			// will then be accessible via an "errorMessage" key in the Lambda response.
+			// The pattern specified in the Lambda Error Regex of an integration response
+			// will match against the entire string of "errorMessage".
+			throw new Error(JSON.stringify(response));
+		}
+		
+		return response;
 	};
 	
 	throw new Error(`${statusCode} is not a supported status code.`);
