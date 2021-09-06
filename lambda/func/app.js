@@ -14,10 +14,9 @@ module.exports.handler = async (event) => {
 
 	if (eventValidationErrors.length > 0) {
 		// The event failed validation.
-		return responses.badRequest({
-			msg: messages.handler.EVENT_INVALID,
-			errors: eventValidationErrors
-		});
+		return responses.badRequest(
+			messages.handler.EVENT_INVALID,
+			eventValidationErrors);
 	}
 
 	// Attempt to read the Lambda config file from disk.
@@ -27,17 +26,13 @@ module.exports.handler = async (event) => {
 
 	if (!config.couldRead) {
 		// Failed to read the config file from disk.
-		return responses.internalServerError({
-			msg: messages.handler.CONFIG_CANNOT_READ
-		});
+		return responses.internalServerError(messages.handler.CONFIG_CANNOT_READ);
 	}
 
 	if (config.validationErrors.length > 0) {
 		// The config file failed validation.
-		return responses.internalServerError({
-			msg: messages.handler.CONFIG_INVALID,
-			errors: config.validationErrors
-		});
+		return responses.internalServerError(messages.handler.CONFIG_INVALID,
+			config.validationErrors);
 	}
 
 	const {
@@ -77,10 +72,9 @@ module.exports.handler = async (event) => {
 
 	// Validate the length of the provided program.
 	if (program.length > constants.MAX_PROGRAM_LENGTH) {
-		return responses.badRequest({
-			msg: messages.format(messages.handler.MAXIMUM_PROGRAM_LENGTH_EXCEEDED,
-				[program.length, constants.MAX_PROGRAM_LENGTH])
-		});
+		return responses.badRequest(messages.format(
+			messages.handler.MAXIMUM_PROGRAM_LENGTH_EXCEEDED,
+			[program.length, constants.MAX_PROGRAM_LENGTH]));
 	}
 
 	console.log(messages.format(
@@ -89,21 +83,19 @@ module.exports.handler = async (event) => {
 	
 	// Validate the provided semantic version.
 	if (!supportedSemanticVersions.includes(semanticVersion)) {
-		return responses.badRequest({
-			msg: messages.format(messages.handler.INVALID_SEMANTIC_VERSION,
-				[semanticVersion, supportedSemanticVersions.join(', ').trim()])
-		});
+		return responses.badRequest(messages.format(
+				messages.handler.INVALID_SEMANTIC_VERSION,
+				[semanticVersion, supportedSemanticVersions.join(', ').trim()]));
 	}
 
-	console.log(messages.format(
-		messages.cloudWatch.VALID_SEMANTIC_VERSION, [semanticVersion]));
+	console.log(messages.format(messages.cloudWatch.VALID_SEMANTIC_VERSION,
+		[semanticVersion]));
 
 	// Validate the provided compiler flags.
 	if (flags.map(f => supportedFlagNames.includes(f)).includes(false)) {
-		return responses.badRequest({
-			msg: messages.format(messages.handler.INVALID_COMPILER_FLAG,
-				[supportedFlagNames.join(', ').trim()])
-		});
+		return responses.badRequest(messages.format(
+				messages.handler.INVALID_COMPILER_FLAG,
+				[supportedFlagNames.join(', ').trim()]));
 	}
 
 	if (flags.length) {
@@ -122,13 +114,9 @@ module.exports.handler = async (event) => {
 
 	if (errMsg) {
 		// Encountered an error when attempting to run the compiler.
-		return responses.internalServerError({
-			msg: errMsg
-		});
+		return responses.internalServerError(errMsg);
 	}
 
 	// Successful run of compiler.
-	return responses.ok({
-		msg: exec
-	});
+	return responses.ok(exec);
 };

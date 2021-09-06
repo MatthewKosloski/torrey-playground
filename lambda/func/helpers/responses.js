@@ -33,7 +33,7 @@ const _baseResponseObj = (statusCode, headers, body) => {
 	throw new Error(`${statusCode} is not a supported status code.`);
 };
 
-const ok = (body) => {
+const ok = (msg) => {
 	return _baseResponseObj(
 		200,
 		{
@@ -42,11 +42,11 @@ const ok = (body) => {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 		},
-		JSON.stringify(body)
+		JSON.stringify({ msg })
 	);
 };
 
-const badRequest = (body) => {
+const badRequest = (msg, errors = []) => {
 	return _baseResponseObj(
 		400,
 		{
@@ -55,11 +55,11 @@ const badRequest = (body) => {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 		},
-		JSON.stringify(body)
+		JSON.stringify({ msg, errors })
 	);
 };
 
-const internalServerError = (body) => {
+const internalServerError = (msg, errors = []) => {
 	return _baseResponseObj(
 		500,
 		{
@@ -68,7 +68,7 @@ const internalServerError = (body) => {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
 		},
-		JSON.stringify(body)
+		JSON.stringify({ msg, errors })
 	);
 };
 
