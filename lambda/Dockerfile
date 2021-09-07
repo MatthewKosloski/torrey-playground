@@ -72,7 +72,10 @@ COPY ./entry_script.sh ${FUNCTION_DIR}
 
 WORKDIR ${FUNCTION_DIR}
 
-RUN npm install jsonschema aws-lambda-ric && npm install
+RUN npm install aws-lambda-ric \
+	&& npm install -g typescript \
+	&& npm install \
+	&& tsc
 
 # Grab a fresh slim copy of the image to reduce the final size.
 FROM node:12-buster-slim
@@ -83,11 +86,11 @@ ARG BASE_TEMP_DIR
 ARG COMPILER_DIR
 
 # Install the compiler dependencies.
-RUN apt-get update && \
-  mkdir -p /usr/share/man/man1 && \
-  apt-get install -y \
-  gcc \
-  openjdk-11-jdk
+# RUN apt-get update && \
+#   mkdir -p /usr/share/man/man1 && \
+#   apt-get install -y \
+#   gcc \
+#   openjdk-11-jdk
 
 # Copy in the handler code.
 COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
@@ -95,10 +98,10 @@ COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 # Copy in the compilers.
 COPY --from=build-image ${COMPILER_DIR} ${COMPILER_DIR}
 
-# Set working directory to the root directory
-# containing the handler code.
-WORKDIR ${FUNCTION_DIR}
+# Set working directory to the location of the 
+# compiled handler code.
+WORKDIR ${FUNCTION_DIR}/build
 
 ADD aws-lambda-rie /usr/local/bin/aws-lambda-rie 
-ENTRYPOINT [ "./entry_script.sh" ]
+ENTRYPOINT [ "../entry_script.sh" ]
 CMD [ "app.handler" ]
