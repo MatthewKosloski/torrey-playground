@@ -11,6 +11,6 @@ export interface Event {
 }
 
 export const handler = async (event: Event) => {
-	return Container.get(LambdaHandler)
+	return await Container.get(LambdaHandler)
 		.handle(event);
 };
