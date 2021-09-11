@@ -6,6 +6,16 @@ const messages = {
 		return `messages.format() stub`;
 	}
 }
+export interface ResponseObject {
+	status: {
+		code: number,
+		text: string
+	},
+	headers: {
+		[key: string]: string
+	},
+	body: string
+}
 
 type ResponseBody = string | object;
 
@@ -105,17 +115,6 @@ class InternalServerErrorResponse extends JSONResponse {
 		super({ code: HttpStatusCode.INTERNAL_SERVER_ERROR,
 			text: HttpStatusText.INTERNAL_SERVER_ERROR }, body, headers);
 	}
-}
-
-interface ResponseObject {
-	status: {
-		code: number,
-		text: string
-	},
-	headers: {
-		[key: string]: string
-	},
-	body: string
 }
 
 @Service()

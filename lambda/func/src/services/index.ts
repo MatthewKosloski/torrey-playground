@@ -1,8 +1,9 @@
 import { LoggingService } from './LoggingService';
-import { ResponseService } from './ResponseService';
+import { ResponseService, ResponseObject } from './ResponseService';
 import { ValidationService } from './ValidationService';
 export {
 	LoggingService,
 	ResponseService,
-	ValidationService
+	ValidationService,
+	ResponseObject
 }
