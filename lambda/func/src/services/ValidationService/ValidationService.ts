@@ -4,8 +4,6 @@ import { configSchema, eventSchema } from './schemas';
 
 @Service()
 export class ValidationService {
-	
-	constructor() {}
 
 	public validateEvent(event: Event): string[] {
 		return this._validate(event, eventSchema);
