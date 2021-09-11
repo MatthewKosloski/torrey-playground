@@ -1,6 +1,6 @@
 import { Service } from 'typedi';
 import { validate } from 'jsonschema';
-import { configSchema, eventSchema } from '../schemas';
+import { configSchema, eventSchema } from './schemas';
 
 @Service()
 export class ValidationService {

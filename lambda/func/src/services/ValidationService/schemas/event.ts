@@ -1,4 +1,4 @@
-export default {
+const event: any = {
 	type: 'object',
 	properties: {
 		program: {
@@ -26,3 +26,5 @@ export default {
 		'program'
 	]
 };
+
+export default event;

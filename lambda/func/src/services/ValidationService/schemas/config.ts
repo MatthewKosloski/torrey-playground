@@ -1,4 +1,4 @@
-export default {
+const config: any = {
 	type: 'object',
 	properties: {
 		supportedSemanticVersions: {
@@ -69,3 +69,5 @@ export default {
 		'defaults'
 	]
 };
+
+export default config;
