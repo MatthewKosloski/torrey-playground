@@ -8,14 +8,14 @@ export class ValidationService {
 	constructor() {}
 
 	public validateEvent(event: Event): string[] {
-		return this._validateAgainstSchema(event, eventSchema);
+		return this._validate(event, eventSchema);
 	}
 
 	public validateConfig(config: any): string[] {
-		return this._validateAgainstSchema(config, configSchema);
+		return this._validate(config, configSchema);
 	}
 
-	private _validateAgainstSchema(instance: any, schema: any): string[] {
+	private _validate(instance: any, schema: any): string[] {
 		const { errors } = validate(instance, schema);
 
 		// Convert errors from an array of objects to
