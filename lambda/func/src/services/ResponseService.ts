@@ -1,11 +1,6 @@
 import { Service } from 'typedi';
+import { MessagingService } from '.';
 
-// TODO: Remove stub
-const messages = {
-	format: (template: string, args: string[]) => {
-		return `messages.format() stub`;
-	}
-}
 export interface ResponseObject {
 	status: {
 		code: number,
@@ -119,6 +114,9 @@ class InternalServerErrorResponse extends JSONResponse {
 
 @Service()
 export class ResponseService {
+
+	constructor(private _messagingService: MessagingService) {}
+
 	public ok(body: ResponseBody): 
 		ResponseObject {
 		return this._toResponseObject(Response.withCORS(
@@ -134,7 +132,7 @@ export class ResponseService {
 	public badRequestTemplate(template: string, args: string[] = []):
 		ResponseObject {
 		return this._toResponseObject(Response.withCORS(
-			new BadRequestResponse(messages.format(template, args))));
+			new BadRequestResponse(this._messagingService.format(template, args))));
 	}
 
 	public internalServerError(msg: string, errors: string[] = []):
