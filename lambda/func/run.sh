@@ -1,9 +1,5 @@
 #!/bin/bash
 
-display_usage () {
-	echo "This is usage info!"
-}
-
 # $1 A script flag name
 # $2 The value of the flag
 # $3 Indicates whether the flag value
@@ -35,19 +31,6 @@ declare -a flags
 # to the argument.
 while (( "$#" )); do
 	case "$1" in
-		--help|-h)
-			display_usage
-			shift
-			# Quit successfully after displaying usage info.
-			exit 70
-			;;
-  	--version)
-			if ! semanticVersion="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-      ;;
 		--program)
 			if ! program="$(parse_flag_value "$1" "$2" true)"; then
 				exit 70
@@ -60,34 +43,6 @@ while (( "$#" )); do
 				exit 70
 			else
 				flags=($flagStr)
-				shift 2
-			fi
-			;;
-		--temp-dir)
-			if ! tmpDir="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-			;;
-		--compiler-name)
-			if ! compilerFileName="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-			;;
-		--compilers-root-dir)
-			if ! compilersRootDir="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-			;;
-		--compiler-dir)
-			if ! compilerDir="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
 				shift 2
 			fi
 			;;
@@ -145,28 +100,8 @@ while (( "$#" )); do
 done
 
 missingArgs=()
-if [ -z "$semanticVersion" ]; then
-	missingArgs+=("--version")
-fi
-
 if [ -z "$program" ]; then
 	missingArgs+=("--program")
-fi
-
-if [ -z "$tmpDir" ]; then
-	missingArgs+=("--temp-dir")
-fi
-
-if [ -z "$compilerFileName" ]; then
-	missingArgs+=("--compiler-name")
-fi
-
-if [ -z "$compilersRootDir" ]; then
-	missingArgs+=("--compilers-root-dir")
-fi
-
-if [ -z "$compilerDir" ]; then
-	missingArgs+=("--compiler-dir")
 fi
 
 if [ -z "$compilerPath" ]; then

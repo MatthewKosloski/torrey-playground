@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"target": "ES2017",
+		"noImplicitAny": true,
+		"preserveConstEnums": true,
+		"outDir": "./build",
+		"sourceMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true
+	},
+	"include": ["src/app.ts"],
+	"exclude": ["node_modules"]
+}

@@ -3,3 +3,5 @@ Vagrantfile
 bootstrap.sh
 .vagrant
 aws-lambda-rie
+node_modules
+build
