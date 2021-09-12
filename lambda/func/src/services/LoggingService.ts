@@ -4,15 +4,12 @@ import { Service } from 'typedi';
 const messages = {
 	format: (template: string, args: string[]) => {
 		return `messages.format() stub`;
-	}
-}
+	},
+};
 
 @Service()
 export class LoggingService {
-	
-	constructor(
-		private readonly _isEnabled: boolean = true
-	) {}
+	constructor(private readonly _isEnabled: boolean = true) {}
 
 	public log(msgs: string[]): void {
 		if (this._isEnabled) {

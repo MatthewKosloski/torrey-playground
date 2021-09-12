@@ -1,4 +1,2 @@
 import { ValidationService } from './ValidationService';
-export {
-	ValidationService
-}
+export { ValidationService };

@@ -1,20 +1,22 @@
 {
-  "name": "func",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app-old.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^16.7.10"
-  },
-  "dependencies": {
-    "jsonschema": "^1.4.0",
-    "reflect-metadata": "^0.1.13",
-    "typedi": "^0.10.0"
-  }
+	"name": "func",
+	"version": "1.0.0",
+	"description": "",
+	"main": "app-old.js",
+	"scripts": {
+		"prettier": "npx prettier --write .",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "^16.7.10",
+		"prettier": "2.4.0"
+	},
+	"dependencies": {
+		"jsonschema": "^1.4.0",
+		"reflect-metadata": "^0.1.13",
+		"typedi": "^0.10.0"
+	}
 }

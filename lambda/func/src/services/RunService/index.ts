@@ -1,4 +1,2 @@
 import { RunService } from './RunService';
-export {
-	RunService
-}
+export { RunService };

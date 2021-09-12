@@ -10,5 +10,5 @@ export {
 	MessagingService,
 	ResponseService,
 	ValidationService,
-	IOService
-}
+	IOService,
+};

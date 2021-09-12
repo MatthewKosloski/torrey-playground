@@ -1,4 +1,2 @@
 import { MessagingService } from './MessagingService';
-export {
-	MessagingService
-}
+export { MessagingService };

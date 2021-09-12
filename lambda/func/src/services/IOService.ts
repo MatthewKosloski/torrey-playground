@@ -2,25 +2,25 @@ import { Service } from 'typedi';
 import * as util from 'util';
 import * as fs from 'fs';
 import { ValidationService } from '../services';
-import { 
-	FailedOperation, 
-	OperationResult, 
-	SuccessfulOperation
+import {
+	FailedOperation,
+	OperationResult,
+	SuccessfulOperation,
 } from '../OperationResult';
 
 export interface Config {
 	defaults: {
-		program: string,
+		program: string;
 		options: {
-			flags: string[],
-			semanticVersion: string
-		}
-	},
-	supportedSemanticVersions: string[],
+			flags: string[];
+			semanticVersion: string;
+		};
+	};
+	supportedSemanticVersions: string[];
 	supportedFlags: {
-		name: string,
-		description: string
-	}[]
+		name: string;
+		description: string;
+	}[];
 }
 
 @Service()
@@ -35,7 +35,9 @@ export class IOService {
 	 * wrapped in a FailedOperation is returned. Otherwise, a SuccessfulOperation with the
 	 * config file contents is returned.
 	 */
-	public async getConfig(path: string): Promise<OperationResult<null | string[] | Config>> {
+	public async getConfig(
+		path: string
+	): Promise<OperationResult<null | string[] | Config>> {
 		const readResult = await this._read(path);
 
 		if (readResult instanceof FailedOperation) {
@@ -58,7 +60,7 @@ export class IOService {
 
 	/*
 	 * Reads the entire contents of the file at the given path.
-	 * 
+	 *
 	 * @param path The path to the file (including filename and extension)
 	 * that is to be read.
 	 * @returns An OperationResult containing the file contents or null if
@@ -66,12 +68,13 @@ export class IOService {
 	 */
 	private async _read(path: string): Promise<OperationResult<string | null>> {
 		try {
-			const fileContents: string =
-				await util.promisify(fs.readFile)(path, 'utf8');
+			const fileContents: string = await util.promisify(fs.readFile)(
+				path,
+				'utf8'
+			);
 			return new SuccessfulOperation(fileContents);
 		} catch {
 			return new FailedOperation();
 		}
 	}
-
 }

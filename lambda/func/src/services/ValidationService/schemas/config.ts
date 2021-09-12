@@ -7,9 +7,9 @@ const config: any = {
 				type: 'string',
 				// rudimentary pattern matching for a semantic version
 				pattern: '^\\d+.\\d+.\\d+$',
-				uniqueItems: true
+				uniqueItems: true,
 			},
-			minItems: 1
+			minItems: 1,
 		},
 		supportedFlags: {
 			type: 'array',
@@ -17,23 +17,20 @@ const config: any = {
 				type: 'object',
 				properties: {
 					name: {
-						type: 'string'
+						type: 'string',
 					},
 					description: {
-						type: 'string'
-					}
+						type: 'string',
+					},
 				},
-				required: [
-					'name', 
-					'description'
-				]
-			}
+				required: ['name', 'description'],
+			},
 		},
 		defaults: {
 			type: 'object',
 			properties: {
 				program: {
-					type: 'string'
+					type: 'string',
 				},
 				options: {
 					type: 'object',
@@ -42,32 +39,22 @@ const config: any = {
 							type: 'array',
 							items: {
 								type: 'string',
-								uniqueItems: true
-							}
+								uniqueItems: true,
+							},
 						},
 						semanticVersion: {
 							type: 'string',
 							// rudimentary pattern matching for a semantic version
 							pattern: '^\\d+.\\d+.\\d+$',
-						}
+						},
 					},
-					required: [
-						'flags',
-						'semanticVersion'
-					]
-				}
+					required: ['flags', 'semanticVersion'],
+				},
 			},
-			required: [
-				'program',
-				'options'
-			]
-		}
+			required: ['program', 'options'],
+		},
 	},
-	required: [
-		'supportedSemanticVersions', 
-		'supportedFlags', 
-		'defaults'
-	]
+	required: ['supportedSemanticVersions', 'supportedFlags', 'defaults'],
 };
 
 export default config;
