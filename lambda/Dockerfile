@@ -86,11 +86,11 @@ ARG BASE_TEMP_DIR
 ARG COMPILER_DIR
 
 # Install the compiler dependencies.
-# RUN apt-get update && \
-#   mkdir -p /usr/share/man/man1 && \
-#   apt-get install -y \
-#   gcc \
-#   openjdk-11-jdk
+RUN apt-get update && \
+  mkdir -p /usr/share/man/man1 && \
+  apt-get install -y \
+  gcc \
+  openjdk-11-jdk
 
 # Copy in the handler code.
 COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
