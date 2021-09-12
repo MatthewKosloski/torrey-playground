@@ -1,9 +1,5 @@
 #!/bin/bash
 
-display_usage () {
-	echo "This is usage info!"
-}
-
 # $1 A script flag name
 # $2 The value of the flag
 # $3 Indicates whether the flag value
@@ -35,12 +31,6 @@ declare -a flags
 # to the argument.
 while (( "$#" )); do
 	case "$1" in
-		--help|-h)
-			display_usage
-			shift
-			# Quit successfully after displaying usage info.
-			exit 70
-			;;
   	--version)
 			if ! semanticVersion="$(parse_flag_value "$1" "$2")"; then
 				exit 70
