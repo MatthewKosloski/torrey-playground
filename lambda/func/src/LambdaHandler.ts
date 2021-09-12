@@ -35,13 +35,22 @@ export class LambdaHandler {
 
 	public async handle(event: Event): Promise<ResponseObject> {
 
+		const {
+			EVENT_INVALID,
+			CONFIG_CANNOT_READ,
+			CONFIG_INVALID,
+			MAXIMUM_PROGRAM_LENGTH_EXCEEDED,
+			INVALID_SEMANTIC_VERSION,
+			INVALID_COMPILER_FLAG
+		} = this._messagingService.messages.handler;
+
 		// Validate the event against a JSON schema.
 		const eventValidationResult = this._validationService.validateEvent(event);
 
 		if (eventValidationResult instanceof FailedOperation) {
 			// The event failed validation.
 			return this._responseService.badRequest(
-				this._messagingService.messages.handler.EVENT_INVALID,
+				EVENT_INVALID,
 				eventValidationResult.getResult());
 		}
 
@@ -52,11 +61,11 @@ export class LambdaHandler {
 		if (getConfigResult instanceof FailedOperation && getConfigResult.isEmpty()) {
 			// Failed to read the config file from disk.
 			return this._responseService.internalServerError(
-				this._messagingService.messages.handler.CONFIG_CANNOT_READ);
+				CONFIG_CANNOT_READ);
 		} else if (getConfigResult instanceof FailedOperation && getConfigResult.isPresent()) {
 			// The config file failed validation.
 			return this._responseService.internalServerError(
-				this._messagingService.messages.handler.CONFIG_INVALID,
+				CONFIG_INVALID,
 				getConfigResult.getResult() as string[]);
 		}
 
@@ -84,14 +93,14 @@ export class LambdaHandler {
 		// Validate the length of the provided program.
 		if (program.length > LambdaHandler.MAX_PROGRAM_LENGTH) {
 			return this._responseService.badRequestTemplate(
-				this._messagingService.messages.handler.MAXIMUM_PROGRAM_LENGTH_EXCEEDED,
+				MAXIMUM_PROGRAM_LENGTH_EXCEEDED,
 				[program.length+'', LambdaHandler.MAX_PROGRAM_LENGTH+'']);
 		}
 
 		// Validate the provided semantic version.
 		if (!supportedSemanticVersions.includes(semanticVersion)) {
 			return this._responseService.badRequestTemplate(
-				this._messagingService.messages.handler.INVALID_SEMANTIC_VERSION,
+				INVALID_SEMANTIC_VERSION,
 				[semanticVersion, supportedSemanticVersions.join(', ').trim()]
 			);
 		}
@@ -99,7 +108,7 @@ export class LambdaHandler {
 		// Validate the provided compiler flags.
 		if (flags.map(f => supportedFlagNames.includes(f)).includes(false)) {
 			return this._responseService.badRequestTemplate(
-				this._messagingService.messages.handler.INVALID_COMPILER_FLAG,
+				INVALID_COMPILER_FLAG,
 				[supportedFlagNames.join(', ').trim()]
 			);
 		}
