@@ -31,13 +31,6 @@ declare -a flags
 # to the argument.
 while (( "$#" )); do
 	case "$1" in
-  	--version)
-			if ! semanticVersion="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-      ;;
 		--program)
 			if ! program="$(parse_flag_value "$1" "$2" true)"; then
 				exit 70
@@ -128,10 +121,6 @@ while (( "$#" )); do
 done
 
 missingArgs=()
-if [ -z "$semanticVersion" ]; then
-	missingArgs+=("--version")
-fi
-
 if [ -z "$program" ]; then
 	missingArgs+=("--program")
 fi

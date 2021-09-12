@@ -110,10 +110,8 @@ export class RunService {
 		const objCodePath = path.join(tmpDir, RunService.RT_OBJ_CODE_FILE_NAME);
 
 		const args = [
-			{name: '--version', value: semanticVersion, isValueQuotted: false},
 			{name: '--program', value: program, isValueQuotted: true},
 			{name: '--temp-dir', value: tmpDir, isValueQuotted: false},
-			{name: '--compiler-name', value: compilerFileName, isValueQuotted: false},
 			{name: '--compilers-root-dir', value: compilersRootDir, isValueQuotted: false},
 			{name: '--compiler-path', value: compilerPath, isValueQuotted: false},
 			{name: '--runtime-path', value: runtimePath, isValueQuotted: false},
