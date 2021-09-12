@@ -35,18 +35,39 @@ interface ShellArgument {
 
 @Service()
 export class RunService {
+	// The path to the run script on disk, relative to the /build directory.
+	private static RUN_SCRIPT_PATH = '../run.sh';
 
-	private static ASM_FILE_NAME = 'temp.s';
-	private static EXEC_FILE_NAME = 'a.out';
-	private static RT_OBJ_CODE_FILE_NAME = 'runtime.o';
-	private static RT_HEADER_FILE_NAME = 'runtime.h';
-	private static RT_SOURCE_FILE_NAME = 'runtime.c';
+	// The path to the emphemeral storage location given to the Lambda function.
+	// The current user must have read and write permissions for this directory.
+	// Relative to the /build directory.
+	private static EMPHEMERAL_STORAGE_PATH = '../../tmp';
+
+	// The top-level directory to which all compilers are installed. Within this
+	// folder, there are subfolders, where each subfolder contains the install
+	// of a specific version of the compiler. The name of a subfolder is the 
+	// semantic version number of the compiler installed within. Cannot use
+	// the emphemeral storage location because that location is created after
+	// the Docker image is built.
+	private static COMPILERS_INSTALL_PATH = '../../tmp2/compilers';
 
 	constructor(private _messagingService: MessagingService) {}
 
+	/**
+	 * Attempts to compile the given Torrey program.
+	 * 
+	 * @param program The Torrey program that is to be compiled. 
+	 * @param flags Flags that are to be passed to the Torrey compiler.
+	 * @param semanticVersion The version of the Torrey compiler to execute. Must
+	 * be a valid semantic version number of the form Major.Minor.Path.
+	 * @returns An OperationResult containing either an error message,
+	 * if an error is encountered when attempting to execute the compiler,
+	 * or standard output and error of the compiler, if no errors.
+	 */
 	public run(program: string, flags: string[], semanticVersion: string): Promise<RunResult> {
 		return this._run(program, flags, semanticVersion, 
-			'../run.sh', '../../tmp', '../../tmp2/compilers');
+			`torreyc-${semanticVersion}.jar`, 'runtime.c', 'runtime.h',
+			'runtime.o', 'temp.s', 'a.out');
 	}
 
 	/*
@@ -59,31 +80,42 @@ export class RunService {
 	* to the Torrey compiler.
 	* @param {string} semanticVersion The version of the compiler to run,
 	* expressed as a semantic version. 
-	* @param {string} runScriptPath The path to the run script on disk.
-	* @param {string} tmpDir The path to the emphemeral storage location
-	* given to the Lambda function. The current user must have read
-	* and write permissions in this location.
-	* @param {string} compilersRootDir The top-level directory at which all
-	* compilers are installed. Within this folder, there are subfolders, 
-	* where each subfolder contains the install of a specific compiler.  
-	* The name of a subfolder is the semantic version of the compiler 
-	* installed within.
-	* @returns An object with two keys: exec and errMsg. If any errors
-	* are encountered when attempting to run the compiler, then errMsg
-	* will be truthy. Upon successful compilation and/or execution of
-	* the Torrey program, exec will contain the standard output and/or
-	* standard error.
+	* @param {string} compilerFileName The name of the jar file of the compiler
+	* that is to be executed.
+	* @param {string} runtimeSourceFilePath The path (including the file name
+	* and extension) of the runtime source file, relative to the compilers
+	* installation path.
+	* @param {string} runtimeHeaderFilePath The path (including the file name
+	* and extension) of the runtime source header file, relative to the compilers
+	* installation path.
+	* @param {string} runtimeObjCodeFilePath The path (including the file name
+	* and extension) of the runtime object code path, relative to the compilers
+	* installation path.
+	* @param {string} asmFilePath The path (including the file name
+	* and extension) of the compiled assembly code, relative to the
+	* Lambda's emphemeral storage location.
+	* @param {string} execFilePath The path (including the file name
+	* and extension) of the assembled executable program, relative to the
+	* Lambda's emphemeral storage location.
+	* @returns An OperationResult containing either an error message,
+	* if an error is encountered when attempting to execute the compiler,
+	* or standard output and error of the compiler, if no errors.
 	*/
-	private async _run(program: string, flags: string[], semanticVersion: string, 
-		runScriptPath: string, tmpDir: string, compilersRootDir: string
+	private async _run(
+		program: string,
+		flags: string[],
+		semanticVersion: string,
+		compilerFileName: string,
+		runtimeSourceFilePath: string,
+		runtimeHeaderFilePath: string,
+		runtimeObjCodeFilePath: string,
+		asmFilePath: string,
+		execFilePath: string
 	): Promise<RunResult> {
-		// The name of the selected compiler's jar file. The "selected compiler"
-		// is the version of the compiler that will be used.
-		const compilerFileName = `torreyc-${semanticVersion}.jar`;
-
 		// The location of the selected compiler, relative to the parent directory 
 		// that contains all compilers.
-		const compilerDir = path.join(compilersRootDir, semanticVersion)
+		const compilerDir = path.join(RunService.COMPILERS_INSTALL_PATH,
+			semanticVersion);
 
 		// The path to the compiler's jar file, relative to the parent 
 		// directory that contains all compilers.
@@ -91,23 +123,24 @@ export class RunService {
 
 		// The path to the compiler's runtime source, relative to the parent 
 		// directory that contains all compilers.
-		const runtimePath = path.join(compilerDir, RunService.RT_SOURCE_FILE_NAME);
+		const runtimePath = path.join(compilerDir, runtimeSourceFilePath);
 
 		// The path to the compiler's runtime header file, relative to the parent 
 		// directory that contains all compilers.
-		const runtimeHeaderPath = path.join(compilerDir, RunService.RT_HEADER_FILE_NAME);
+		const runtimeHeaderPath = path.join(compilerDir, runtimeHeaderFilePath);
 
 		// The path to which the resulting assembly code will be written, relative
 		// to the Lambda's emphemeral storage directory.
-		const asmPath = path.join(tmpDir, RunService.ASM_FILE_NAME);
+		const asmPath = path.join(RunService.EMPHEMERAL_STORAGE_PATH, asmFilePath);
 
 		// The path to which the resulting executable file will be written, relative
 		// to the Lambda's emphemeral storage directory.
-		const execPath = path.join(tmpDir, RunService.EXEC_FILE_NAME);
+		const execPath = path.join(RunService.EMPHEMERAL_STORAGE_PATH, execFilePath);
 
 		// The path to which the runtime object code will be written, relative
 		// to the Lambda's emphemeral storage directory.
-		const objCodePath = path.join(tmpDir, RunService.RT_OBJ_CODE_FILE_NAME);
+		const objCodePath = path.join(RunService.EMPHEMERAL_STORAGE_PATH,
+			runtimeObjCodeFilePath);
 
 		const args = [
 			{name: '--program', value: program, isValueQuotted: true},
@@ -126,26 +159,29 @@ export class RunService {
 		if (flags.length)
 			args.push({name: '--flags', value: flags.join(' '), isValueQuotted: true});
 
-		const scriptExecutionResult = await this._runShellScript(runScriptPath, args);
+		const scriptExecutionResult = await this._runShellScript(
+			RunService.RUN_SCRIPT_PATH, args);
 
 		let result: RunResult;
 		if (scriptExecutionResult instanceof SuccessfulOperation) {
 			// On successful execution of the run script, we should return an 
 			// ExecutionResult type wrapped in a SuccessfulOperation object.
-			const successfulResult: ExecutionResult = scriptExecutionResult.getResult() as ExecutionResult;
+			const successfulResult: ExecutionResult = 
+				scriptExecutionResult.getResult() as ExecutionResult;
 			result = new SuccessfulOperation(successfulResult);
 		} else {
 			// On unsuccessful execution of the run script, we should return
 			// a friendly error message (string) that's derived from the
 			// exit code of the run script.
 
-			const failureResult: ExecError = scriptExecutionResult.getResult() as ExecError;
+			const failureResult: ExecError = 
+				scriptExecutionResult.getResult() as ExecError;
 			const { code: exitCode, stderr } = failureResult;
 
 			// Map the error code to an error template string. If there
 			// is no corresponding template for a given error code, then
 			// use a default error message.
-			let template = this._messagingService.messages.bash[`_${exitCode}`] 
+			let template = this._messagingService.messages.bash[`_${exitCode}`]
 				|| this._messagingService.messages.handler.UNKNOWN_ERROR;
 			
 			// Map the script exit code to an array of arguments
@@ -182,6 +218,18 @@ export class RunService {
 		return result;
 	}
 
+	/*
+	 * Attempts to execute the run script using bash shell, by default.
+	 *
+	 * @param {string} scriptPath The path to the run script on disk, 
+	 * relative to the /build directory.
+	 * @param {ShellArgument[]} args An array of objects describing the arguments
+	 * that are to be given to the run script. 
+	 * @param {Shell} shell The name of the shell to use to execute the run script.
+	 * @returns The standard ouput and error streams, as strings, if the
+	 * execution succeeds. If the execution fails, then the error thrown
+	 * is returned.
+	 */
 	private async _runShellScript(scriptPath: string, args: ShellArgument[],
 		shell: Shell = Shell.BASH
 	): Promise<OperationResult<ExecutionResult | ExecError>> {
@@ -203,10 +251,11 @@ export class RunService {
 	/*
 	 * Spawns a shell then executes the given command within that shell, 
 	 * buffering any generated output.
-	 * @param {string} command The command to execute within a shell child process. If the
-	 * command contains any user input, then it must first be sanitized to prevent
-	 * the interpretation of any shell metacharacters. See the section on quoting
-	 * in the Bash Reference Manual.
+	 * 
+	 * @param {string} command The command to execute within a shell child process. 
+	 * If the command contains any user input, then it must first be sanitized to
+	 * prevent the interpretation of any shell metacharacters. See the section on
+	 * quoting in the Bash Reference Manual.
 	 * @returns The standard ouput and error streams, as strings, if the
 	 * execution succeeds. If the execution fails, then the error thrown
 	 * is returned.
