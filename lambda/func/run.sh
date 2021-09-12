@@ -46,27 +46,6 @@ while (( "$#" )); do
 				shift 2
 			fi
 			;;
-		--temp-dir)
-			if ! tmpDir="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-			;;
-		--compiler-name)
-			if ! compilerFileName="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-			;;
-		--compilers-root-dir)
-			if ! compilersRootDir="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-			;;
 		--compiler-path)
 			if ! compilerPath="$(parse_flag_value "$1" "$2")"; then
 				exit 70
@@ -123,18 +102,6 @@ done
 missingArgs=()
 if [ -z "$program" ]; then
 	missingArgs+=("--program")
-fi
-
-if [ -z "$tmpDir" ]; then
-	missingArgs+=("--temp-dir")
-fi
-
-if [ -z "$compilerFileName" ]; then
-	missingArgs+=("--compiler-name")
-fi
-
-if [ -z "$compilersRootDir" ]; then
-	missingArgs+=("--compilers-root-dir")
 fi
 
 if [ -z "$compilerPath" ]; then

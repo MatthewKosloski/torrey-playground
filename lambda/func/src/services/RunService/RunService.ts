@@ -111,8 +111,6 @@ export class RunService {
 
 		const args = [
 			{name: '--program', value: program, isValueQuotted: true},
-			{name: '--temp-dir', value: tmpDir, isValueQuotted: false},
-			{name: '--compilers-root-dir', value: compilersRootDir, isValueQuotted: false},
 			{name: '--compiler-path', value: compilerPath, isValueQuotted: false},
 			{name: '--runtime-path', value: runtimePath, isValueQuotted: false},
 			{name: '--runtime-header-path', value: runtimeHeaderPath, isValueQuotted: false},
