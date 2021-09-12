@@ -84,13 +84,6 @@ while (( "$#" )); do
 				shift 2
 			fi
 			;;
-		--compiler-dir)
-			if ! compilerDir="$(parse_flag_value "$1" "$2")"; then
-				exit 70
-			else
-				shift 2
-			fi
-			;;
 		--compiler-path)
 			if ! compilerPath="$(parse_flag_value "$1" "$2")"; then
 				exit 70
@@ -163,10 +156,6 @@ fi
 
 if [ -z "$compilersRootDir" ]; then
 	missingArgs+=("--compilers-root-dir")
-fi
-
-if [ -z "$compilerDir" ]; then
-	missingArgs+=("--compiler-dir")
 fi
 
 if [ -z "$compilerPath" ]; then

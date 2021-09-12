@@ -115,7 +115,6 @@ export class RunService {
 			{name: '--temp-dir', value: tmpDir, isValueQuotted: false},
 			{name: '--compiler-name', value: compilerFileName, isValueQuotted: false},
 			{name: '--compilers-root-dir', value: compilersRootDir, isValueQuotted: false},
-			{name: '--compiler-dir', value: compilerDir, isValueQuotted: false},
 			{name: '--compiler-path', value: compilerPath, isValueQuotted: false},
 			{name: '--runtime-path', value: runtimePath, isValueQuotted: false},
 			{name: '--runtime-header-path', value: runtimeHeaderPath, isValueQuotted: false},
