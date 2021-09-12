@@ -1,6 +1,6 @@
 export class OperationResult<T> {
 	constructor(
-		private _result: T,
+		private _result: T = null,
 		private _isSuccessful: boolean = false
 	) {}
 
@@ -10,5 +10,13 @@ export class OperationResult<T> {
 
 	public isSuccessful(): boolean {
 		return this._isSuccessful;
+	}
+
+	public isPresent(): boolean {
+		return this._result !== null;
+	}
+
+	public isEmpty(): boolean {
+		return this._result === null;
 	}
 }
