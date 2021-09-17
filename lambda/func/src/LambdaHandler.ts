@@ -118,7 +118,7 @@ export class LambdaHandler {
 		}
 
 		const runResult = await this._runService.run(
-			event.program,
+			program,
 			flags,
 			semanticVersion
 		);
